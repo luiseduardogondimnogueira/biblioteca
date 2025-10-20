@@ -1,6 +1,5 @@
 package br.edu.unichristus.biblioteca.service;
 
-import br.edu.unichristus.biblioteca.domain.model.Categoria;
 import br.edu.unichristus.biblioteca.domain.model.HistoricoChat;
 import br.edu.unichristus.biblioteca.repository.HistoricoChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
