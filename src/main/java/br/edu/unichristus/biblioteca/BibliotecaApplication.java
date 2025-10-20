@@ -8,9 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "Documentação da API BIBLIOTECA",
+                title = "Documentação da API Biblioteca",
                 version = "1.0",
-                description = "Trata-se da documentação da API construída para a avaliação da NP2",
+                description = "Documentação criada para a API Biblioteca, projeto acadêmico da disciplina\n" +
+                              "Tópicos Especiais em Programação Web para 2a. avaliação no semestre 2025.2",
                 contact = @Contact(
                         name = "Luís Eduardo Nogueira, Cristiano Florêncio e Cauã Carvalho",
                         email = "luiseduardogondimnogueira@gmail.com",
