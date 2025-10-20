@@ -15,7 +15,7 @@ public class HistoricoChatController {
     private HistoricoChatService service;
 
     @PostMapping
-    private HistoricoChat create (@RequestBody HistoricoChat historicoChat) {
+    private HistoricoChat create(@RequestBody HistoricoChat historicoChat) {
         return service.create(historicoChat);
     }
 
