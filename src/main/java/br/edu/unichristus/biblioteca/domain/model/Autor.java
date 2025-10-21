@@ -16,15 +16,16 @@ public class Autor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long autor_id;
+    private Long idAutor;
 
-    private String nomeCompleto;
+    @Column(nullable = false, length = 100)
+    private String nomeAutor;
 
     private LocalDate dataNascimento;
 
     private String nacionalidade;
 
-    private String biografiaResumo;
+    private String biografia;
 
     // Relacionamento One-to-Many: Um autor para muitos livros
     @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
