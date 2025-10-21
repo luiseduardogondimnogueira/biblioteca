@@ -20,7 +20,28 @@ public class AutorController {
     }
 
     @GetMapping("/all")
-    public List<Autor> getAll() {
-        return service.getAll();
+    public List<Autor> findAll() {
+        return service.findAll();
     }
+
+    @GetMapping("/{id}")
+    public Autor findById(@PathVariable(name = "idAutor") Long id) {
+        return service.findById(id);
+    }
+
+    @GetMapping("/search")
+    public List<Autor> findByNome(@RequestParam(name = "nomeAutor") String nome) {
+        return service.findByName(nome);
+    }
+
+    @PutMapping
+    public Autor update(@RequestBody Autor autor) {
+        return service.update(autor);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable(name = "idAutor") Long id) {
+        service.deleteById(id);
+    }
+
 }
