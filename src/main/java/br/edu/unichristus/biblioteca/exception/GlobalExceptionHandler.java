@@ -1,4 +1,4 @@
-package br.edu.unichristus.biblioteca.Exception;
+package br.edu.unichristus.biblioteca.exception;
 
 import br.edu.unichristus.biblioteca.domain.dto.ErrorDTO;
 import org.slf4j.Logger;
