@@ -15,16 +15,16 @@ public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoria_id;
+    private Long idCategoria;
 
     @Column(unique = true)
-    private String nome;
-
-    private String descricao;
+    private String nomeCategoria;
 
     private String areaConhecimento;
 
-    // Relacionamento One-to-Many: Uma categoria para muitos livros
+    private String descricao;
+
+    // Relacionamento One-to-Many: 1 categoria para muitos livros
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL)
     private List<Livro> livros;
 }

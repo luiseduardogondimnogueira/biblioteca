@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "Documentação da API Biblioteca",
+                title = "Documentação da API Biblioteca Virtual",
                 version = "1.0",
                 description = "Documentação criada para a API Biblioteca, projeto acadêmico da disciplina\n" +
                               "Tópicos Especiais em Programação Web para 2a. avaliação no semestre 2025.2",

@@ -15,22 +15,25 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long usuario_id;
-
-    @Column(nullable = false, unique = true)
-    private String telefone;
+    private Long idUsuario;
 
     @Column(nullable = false, length = 100)
-    private String nomeCompleto;
+    private String nomeUsuario;
 
     @Column(unique = true)
     private String email;
 
+    @Column(nullable = false, unique = true)
+    private String telefone;
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private List<HistoricoChat> historicoChat;
-///    A anotação @OneToMany indica que um Usuário pode ter múltiplos registros em HistoricoChat.
-///    mappedBy = "usuario" define que a responsabilidade pelo mapeamento (ou seja, a coluna de
-///    chave estrangeira) está no lado Many, que é o campo usuario na classe HistoricoChat.
-///    cascade = CascadeType.ALL significa que, se você excluir um Usuário, todos os seus
-///    registros de HistoricoChat relacionados também serão excluídos automaticamente.
+    private List<Transacao> transacoes;
+
+//    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+//    private List<HistoricoChat> historicos;
+//    A anotação @OneToMany indica que um Usuário pode ter múltiplos registros em HistoricoChat.
+//    mappedBy = "usuario" define que a responsabilidade pelo mapeamento (ou seja, a coluna de
+//    chave estrangeira) está no lado Many, que é o campo usuario na classe HistoricoChat.
+//    cascade = CascadeType.ALL significa que, se você excluir um Usuário, todos os seus
+//    registros de HistoricoChat relacionados também serão excluídos automaticamente.
 }

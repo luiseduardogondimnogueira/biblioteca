@@ -15,9 +15,9 @@ public class HistoricoChat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long session_id;
+    private long idSession;
 
-    private String message_id;
+    private String idMessage;
 
     private String message;
 
@@ -25,13 +25,13 @@ public class HistoricoChat {
 
     // Relacionamento Many-to-One com Usuario
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "idUsuario")
     private Usuario usuario;
 
     // A anotação @ManyToOne indica que muitos registros de HistoricoChat se referem a um único Usuário.
     // fetch = FetchType.LAZY garante que o objeto Usuario só será carregado do banco de dados quando for explicitamente
     // acessado, otimizando o desempenho.
-    // @JoinColumn(name = "usuario_id") define a coluna de chave estrangeira que ligará esta tabela à tabela Usuario.
-    // O nome usuario_id é o nome da chave primária na classe Usuario.
+    // @JoinColumn(name = "idUsuario") define a coluna de chave estrangeira que ligará esta tabela à tabela Usuario.
+    // O nome idUsuario é o nome da chave primária na classe Usuario.
 
 }

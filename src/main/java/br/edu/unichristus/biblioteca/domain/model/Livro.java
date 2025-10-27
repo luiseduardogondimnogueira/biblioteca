@@ -5,29 +5,36 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Livro {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long livro_id;
+    private Long idLivro;
 
     private String titulo;
 
     private Integer anoPublicacao;
 
-    private String urlArquivo; // O caminho virtual para o arquivo do livro (PDF, EPUB, etc.)
+    @Column(length = 1000)
+    private String urlVisualizacao;
 
-    // Relacionamento Many-to-One com Autor
+    @Column(length = 1000)
+    private String urlDownload;
+
+    private BigDecimal preco;
+
+    // Relacionamento Many-to-One com Autor: Vários livros para 1 autor
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "autor_id")
+    @JoinColumn(name = "idAutor")
     private Autor autor;
 
-    // Relacionamento Many-to-One com Categoria
+    // Relacionamento Many-to-One com Categoria: Vários livros para 1 categoria
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id")
+    @JoinColumn(name = "idCategoria")
     private Categoria categoria;
 }
