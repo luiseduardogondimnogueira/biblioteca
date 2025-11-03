@@ -19,7 +19,7 @@ public class Transacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idTransacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUsuario", nullable = false)
@@ -37,7 +37,10 @@ public class Transacao {
     private LocalDateTime dataHora;
 
     @Column(length = 1000)
-    private String url;
+    private String urlVisualizacao;
+
+    @Column(length = 1000)
+    private String urlDownload;
 
     private BigDecimal valor;
 }

@@ -20,8 +20,22 @@ public class HistoricoChatController {
     }
 
     @GetMapping("/all")
-    public List<HistoricoChat> getAll() {
-        return service.getAll();
+    public List<HistoricoChat> findAll() {
+        return service.findAll();
     }
 
+    @GetMapping("/{id}")
+    public HistoricoChat findById(@PathVariable(name = "id") Long id) {
+        return service.findById(id);
+    }
+
+    @PutMapping
+    public HistoricoChat update(@RequestBody HistoricoChat historicoChat) {
+        return service.update(historicoChat);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable(name = "id") Long id) {
+        service.deleteById(id);
+    }
 }

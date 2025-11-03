@@ -20,7 +20,23 @@ public class CategoriaController {
     }
 
     @GetMapping("/all")
-    public List<Categoria> getAll() {
-        return service.getAll();
+    public List<Categoria> findAll() {
+        return service.findAll();
     }
+
+    @GetMapping("/{id}")
+    public Categoria findById(@PathVariable(name = "id") Long id) {
+        return service.findById(id);
+    }
+
+    @PutMapping
+    public Categoria update(@RequestBody Categoria categoria) {
+        return service.update(categoria);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable(name = "id") Long id) {
+        service.deleteById(id);
+    }
+
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,7 +17,8 @@ public class Livro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idLivro;
 
-    private String titulo;
+    @Column(unique = true)
+    private String nomeLivro;
 
     private Integer anoPublicacao;
 
@@ -28,13 +30,14 @@ public class Livro {
 
     private BigDecimal preco;
 
-    // Relacionamento Many-to-One com Autor: Vários livros para 1 autor
+    // Relacionamento Many-to-One com Autor: Vários Livros para 1 Autor
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idAutor")
     private Autor autor;
 
-    // Relacionamento Many-to-One com Categoria: Vários livros para 1 categoria
+    // Relacionamento Many-to-One com Categoria: Vários Livros para 1 Categoria
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idCategoria")
     private Categoria categoria;
+
 }

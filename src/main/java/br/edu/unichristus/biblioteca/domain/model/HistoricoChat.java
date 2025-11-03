@@ -23,15 +23,4 @@ public class HistoricoChat {
 
     private LocalDateTime horario;
 
-    // Relacionamento Many-to-One com Usuario
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idUsuario")
-    private Usuario usuario;
-
-    // A anotação @ManyToOne indica que muitos registros de HistoricoChat se referem a um único Usuário.
-    // fetch = FetchType.LAZY garante que o objeto Usuario só será carregado do banco de dados quando for explicitamente
-    // acessado, otimizando o desempenho.
-    // @JoinColumn(name = "idUsuario") define a coluna de chave estrangeira que ligará esta tabela à tabela Usuario.
-    // O nome idUsuario é o nome da chave primária na classe Usuario.
-
 }

@@ -20,7 +20,22 @@ public class LivroController {
     }
 
     @GetMapping("/all")
-    public List<Livro> getAll() {
-        return service.getAll();
+    public List<Livro> findAll() {
+        return service.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public Livro findById(@PathVariable(name = "id") Long id) {
+        return service.findById(id);
+    }
+
+    @PutMapping
+    public Livro update(@RequestBody Livro livro) {
+        return service.update(livro);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable(name = "id") Long id) {
+        service.deleteById(id);
     }
 }

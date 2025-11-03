@@ -23,7 +23,7 @@ public class AutorService {
                     "O nome do autor é obrigatório");
         }
         // validação para nome de usuario maior que 100 caracteres
-        if (autor.getNomeAutor().length() > 100) {
+       if (autor.getNomeAutor().length() > 100) {
             throw new ApiException(HttpStatus.BAD_REQUEST,
                     "unichristus.service.user.badrequest",
                     "O nome do autor não pode exceder 100 caracteres");

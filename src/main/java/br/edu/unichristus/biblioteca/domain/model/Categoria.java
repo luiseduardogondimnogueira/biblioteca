@@ -24,7 +24,7 @@ public class Categoria {
 
     private String descricao;
 
-    // Relacionamento One-to-Many: 1 categoria para muitos livros
+    // Relacionamento One-to-Many: 1 Categoria pode ter muitos Livros
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL)
     private List<Livro> livros;
 }
