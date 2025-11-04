@@ -25,6 +25,7 @@ public class Autor {
 
     private String nacionalidade;
 
+    @Column(length = 1000)
     private String biografia;
 
     // Relacionamento One-to-Many: Um Autor pode ter muitos Livros

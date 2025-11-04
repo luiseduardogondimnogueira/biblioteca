@@ -16,13 +16,13 @@ public class AutorService {
     private AutorRepository repository;
 
     public Autor create(Autor autor) {
-        // Validação para nome do Autor em branco ou nulo
+        // Validação para nome do Autor em branco
         if (autor.getNomeAutor().isBlank()) {
             throw new ApiException(HttpStatus.BAD_REQUEST,
                     "unichristus.service.user.badrequest",
                     "O nome do autor é obrigatório");
         }
-        // validação para nome de usuario maior que 100 caracteres
+        // validação para nome do Autor maior que 100 caracteres
        if (autor.getNomeAutor().length() > 100) {
             throw new ApiException(HttpStatus.BAD_REQUEST,
                     "unichristus.service.user.badrequest",
