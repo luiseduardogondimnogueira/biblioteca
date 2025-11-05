@@ -1,5 +1,6 @@
 package br.edu.unichristus.biblioteca.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -21,10 +22,12 @@ public class Transacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTransacao;
 
+    // Relacionamento Many-to-One com Usuario: Várias Transacoes para 1 Usuario
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario usuario;
 
+    // Relacionamento Many-to-One com Livro: Vários Transacoes para 1 Livro
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idLivro", nullable = false)
     private Livro livro;

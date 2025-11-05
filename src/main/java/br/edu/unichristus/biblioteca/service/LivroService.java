@@ -1,8 +1,10 @@
 package br.edu.unichristus.biblioteca.service;
 
+import br.edu.unichristus.biblioteca.domain.dto.LivroFindAllDTO;
 import br.edu.unichristus.biblioteca.domain.model.Livro;
 import br.edu.unichristus.biblioteca.exception.ApiException;
 import br.edu.unichristus.biblioteca.repository.LivroRepository;
+import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -47,8 +49,9 @@ public class LivroService {
         return repository.save(livro);
     }
 
-    public List<Livro> findAll() {
-        return repository.findAll();
+    public List<LivroFindAllDTO> findAll() {
+        List<Livro> livros = repository.findAll();
+        return MapperUtil.parseListObjects(livros, LivroFindAllDTO.class);
     }
 
     public Livro findById(Long id) {

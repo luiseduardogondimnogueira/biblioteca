@@ -1,5 +1,6 @@
 package br.edu.unichristus.biblioteca.controller;
 
+import br.edu.unichristus.biblioteca.domain.dto.LivroFindAllDTO;
 import br.edu.unichristus.biblioteca.domain.model.Livro;
 import br.edu.unichristus.biblioteca.service.LivroService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class LivroController {
     }
 
     @GetMapping("/all")
-    public List<Livro> findAll() {
+    public List<LivroFindAllDTO> findAll() {
         return service.findAll();
     }
 
