@@ -1,5 +1,6 @@
 package br.edu.unichristus.biblioteca.controller;
 
+import br.edu.unichristus.biblioteca.domain.dto.LivroDTO;
 import br.edu.unichristus.biblioteca.domain.dto.LivroFindAllDTO;
 import br.edu.unichristus.biblioteca.domain.model.Livro;
 import br.edu.unichristus.biblioteca.service.LivroService;
@@ -26,8 +27,8 @@ public class LivroController {
     }
 
     @GetMapping("/{id}")
-    public Livro findById(@PathVariable(name = "id") Long id) {
-        return service.findById(id);
+    public LivroDTO findById(@PathVariable(name = "id") Long idLivro) {
+        return service.findById(idLivro);
     }
 
     @PutMapping
@@ -36,7 +37,7 @@ public class LivroController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable(name = "id") Long id) {
-        service.deleteById(id);
+    public void delete(@PathVariable(name = "id") Long idLivro) {
+        service.deleteById(idLivro);
     }
 }

@@ -1,8 +1,10 @@
 package br.edu.unichristus.biblioteca.service;
 
+import br.edu.unichristus.biblioteca.domain.dto.CategoriaDTO;
 import br.edu.unichristus.biblioteca.domain.model.Categoria;
 import br.edu.unichristus.biblioteca.exception.ApiException;
 import br.edu.unichristus.biblioteca.repository.CategoriaRepository;
+import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -47,15 +49,16 @@ public class CategoriaService {
         return repository.save(categoria);
     }
 
-    public List<Categoria> findAll() {
-        return repository.findAll();
+    public List<CategoriaDTO> findAll() {
+        return MapperUtil.parseListObjects(repository.findAll(), CategoriaDTO.class);
     }
 
-    public Categoria findById(Long id) {
-        return repository.findById(id)
+    public CategoriaDTO findById(Long id) {
+        Categoria categoriaPesquisada = repository.findById(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
                         "unichristus.service.categoria.notfound",
                         "A categoria com o id pesquisado não foi localizada"));
+        return MapperUtil.parseObject(categoriaPesquisada, CategoriaDTO.class);
     }
 
     public Categoria update(Categoria categoria) {

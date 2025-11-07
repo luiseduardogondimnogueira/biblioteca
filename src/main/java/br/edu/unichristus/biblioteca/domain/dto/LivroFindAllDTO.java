@@ -1,12 +1,11 @@
 package br.edu.unichristus.biblioteca.domain.dto;
 
-import br.edu.unichristus.biblioteca.domain.model.Autor;
-import br.edu.unichristus.biblioteca.domain.model.Categoria;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
-// Representação de Livro, ajustada com AutorSimplesDTO e CategoriaSimplesDTO para evitar loop infinito
+// Representação de Livro, ajustada com AutorSimplesDTO e CategoriaSimplesDTO para
+// evitar loop infinito, mas permitindo que a estrutura fique aninhada
 
 @Data
 public class LivroFindAllDTO {
@@ -23,7 +22,11 @@ public class LivroFindAllDTO {
 
     private BigDecimal preco;
 
+//    private String nomeAutor;
+
     private AutorSimplesDTO autor;
+
+//    private String nomeCategoria;
 
     private CategoriaSimplesDTO categoria;
 

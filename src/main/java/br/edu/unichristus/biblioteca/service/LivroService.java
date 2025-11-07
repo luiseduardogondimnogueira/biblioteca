@@ -1,5 +1,6 @@
 package br.edu.unichristus.biblioteca.service;
 
+import br.edu.unichristus.biblioteca.domain.dto.LivroDTO;
 import br.edu.unichristus.biblioteca.domain.dto.LivroFindAllDTO;
 import br.edu.unichristus.biblioteca.domain.model.Livro;
 import br.edu.unichristus.biblioteca.exception.ApiException;
@@ -54,11 +55,17 @@ public class LivroService {
         return MapperUtil.parseListObjects(livros, LivroFindAllDTO.class);
     }
 
-    public Livro findById(Long id) {
-        return repository.findById(id)
+    public LivroDTO findById(Long id) {
+        Livro livroPesquisado = repository.findById(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
                         "unichristus.service.livro.notfound",
                         "A livro com o id pesquisado não foi localizado"));
+        return MapperUtil.parseObject(livroPesquisado, LivroDTO.class);
+    }
+
+    public List<LivroDTO> listarLivrosPorAutor(long idAutor) {
+        List<Livro> livros = repository.findByAutorIdAutor(idAutor);
+        return MapperUtil.parseListObjects(livros, LivroDTO.class);
     }
 
     public Livro update(Livro livro) {

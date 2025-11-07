@@ -1,5 +1,6 @@
 package br.edu.unichristus.biblioteca.controller;
 
+import br.edu.unichristus.biblioteca.domain.dto.CategoriaDTO;
 import br.edu.unichristus.biblioteca.domain.model.Categoria;
 import br.edu.unichristus.biblioteca.service.CategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +21,13 @@ public class CategoriaController {
     }
 
     @GetMapping("/all")
-    public List<Categoria> findAll() {
+    public List<CategoriaDTO> findAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public Categoria findById(@PathVariable(name = "id") Long id) {
-        return service.findById(id);
+    public CategoriaDTO findById(@PathVariable(name = "id") Long idCategoria) {
+        return service.findById(idCategoria);
     }
 
     @PutMapping
@@ -35,8 +36,8 @@ public class CategoriaController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable(name = "id") Long id) {
-        service.deleteById(id);
+    public void delete(@PathVariable(name = "id") Long idCategoria) {
+        service.deleteById(idCategoria);
     }
 
 }
