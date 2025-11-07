@@ -1,13 +1,19 @@
 package br.edu.unichristus.biblioteca.service;
 
+import br.edu.unichristus.biblioteca.domain.dto.TransacaoDTO;
+import br.edu.unichristus.biblioteca.domain.model.TipoTransacao;
 import br.edu.unichristus.biblioteca.domain.model.Transacao;
 import br.edu.unichristus.biblioteca.exception.ApiException;
 import br.edu.unichristus.biblioteca.repository.TransacaoRepository;
+import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+
+import static br.edu.unichristus.biblioteca.domain.model.TipoTransacao.ACESSO;
 
 @Service
 public class TransacaoService {
@@ -47,15 +53,16 @@ public class TransacaoService {
         return repository.save(transacao);
     }
 
-    public List<Transacao> findAll() {
-        return repository.findAll();
+    public List<TransacaoDTO> findAll() {
+        return MapperUtil.parseListObjects(repository.findAll(), TransacaoDTO.class);
     }
 
-    public Transacao findById(Long id) {
-        return repository.findById(id)
+    public TransacaoDTO findById(Long id) {
+        Transacao transacaoPesquisada = repository.findById(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
                         "unichristus.service.transacao.notfound",
                         "A transacao com o id pesquisado não foi localizada"));
+        return MapperUtil.parseObject(transacaoPesquisada, TransacaoDTO.class);
     }
 
     public Transacao update(Transacao transacao) {
@@ -76,11 +83,30 @@ public class TransacaoService {
     }
 
     public void deleteById(Long id) {
-        Transacao transacao = repository.findById(id)
+        Transacao transacaoPesquisada = repository.findById(id)
                 .orElseThrow(() -> new ApiException(
                         HttpStatus.NOT_FOUND,
                         "unichristus.service.transacao.notfound",
                         "A transacao com o id pesquisado não foi localizada"));
         repository.deleteById(id);
     }
+
+    public List<TransacaoDTO> findTransacaoByUsuario(Long id, TipoTransacao tipo) {
+        List<Transacao> transacoesPesquisadas;
+
+        if (tipo == null) {
+            transacoesPesquisadas = repository.findByUsuario_idUsuarioOrderByDataHoraDesc(id);
+        } else {
+            transacoesPesquisadas = repository.findByUsuario_idUsuarioAndTipoOrderByDataHoraDesc(id, tipo);
+        }
+        if (transacoesPesquisadas == null || transacoesPesquisadas.isEmpty()) {
+            throw new ApiException(
+                    HttpStatus.NOT_FOUND,
+                    "unichristus.service.transacao.notfound",
+                    "A transacao com o id pesquisado não foi localizada");
+        }
+
+        return MapperUtil.parseListObjects(transacoesPesquisadas, TransacaoDTO.class);
+    }
+
 }

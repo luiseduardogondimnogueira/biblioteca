@@ -12,10 +12,12 @@ import java.util.List;
 
 public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 
-    // histórico de transações do usuário
+    // histórico de transações do usuário (filtrar por tipo opcionalmente)
     List<Transacao> findByUsuario_idUsuarioOrderByDataHoraDesc(Long id);
+    List<Transacao> findByUsuario_idUsuarioAndTipoOrderByDataHoraDesc(Long id, TipoTransacao tipo);
 
     // transações de um livro (filtrar por tipo opcionalmente)
+    List<Transacao> findByLivro_idLivro(Long id);
     List<Transacao> findByLivro_idLivroAndTipo(Long id, TipoTransacao tipo);
 
     // transações de um livro em um período

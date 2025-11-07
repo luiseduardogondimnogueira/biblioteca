@@ -1,5 +1,7 @@
 package br.edu.unichristus.biblioteca.controller;
 
+import br.edu.unichristus.biblioteca.domain.dto.TransacaoDTO;
+import br.edu.unichristus.biblioteca.domain.model.TipoTransacao;
 import br.edu.unichristus.biblioteca.domain.model.Transacao;
 import br.edu.unichristus.biblioteca.service.TransacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +21,13 @@ public class TransacaoController {
     }
 
     @GetMapping("/all")
-    public List<Transacao> findAll() {
+    public List<TransacaoDTO> findAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public Transacao findById(@PathVariable(name = "id") Long id) {
-        return service.findById(id);
+    public TransacaoDTO findById(@PathVariable(name = "id") Long idTransacao) {
+        return service.findById(idTransacao);
     }
 
     @PutMapping
@@ -34,8 +36,13 @@ public class TransacaoController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable(name = "id") Long id) {
-        service.deleteById(id);
+    public void delete(@PathVariable(name = "id") Long idTransacao) {
+        service.deleteById(idTransacao);
     }
 
+    @GetMapping("/usuario/{id}")
+    public List<TransacaoDTO> findByUsuario(@PathVariable(name = "id") Long idUsuario,
+                                            @RequestParam(required = false) TipoTransacao tipo) {
+        return service.findTransacaoByUsuario(idUsuario, tipo);
+    }
 }
