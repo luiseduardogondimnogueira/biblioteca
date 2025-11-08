@@ -1,13 +1,18 @@
 package br.edu.unichristus.biblioteca.service;
 
+import br.edu.unichristus.biblioteca.domain.dto.UsuarioRequest;
+import br.edu.unichristus.biblioteca.domain.dto.UsuarioRequestUpdate;
+import br.edu.unichristus.biblioteca.domain.dto.UsuarioResponse;
 import br.edu.unichristus.biblioteca.domain.model.Usuario;
-import br.edu.unichristus.biblioteca.exception.ApiException;
+import br.edu.unichristus.biblioteca.exception.BadRequestException;
+import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
 import br.edu.unichristus.biblioteca.repository.UsuarioRepository;
+import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -15,80 +20,56 @@ public class UsuarioService {
     @Autowired
     public UsuarioRepository repository;
 
-    public Usuario create(Usuario usuario) {
-        // Validação para id digitado
-        if (usuario.getIdUsuario() != null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.usuario.badrequest",
-                    "O parâmento idUsuario não deve constar na requisição");
+    public UsuarioResponse create(UsuarioRequest usuarioRequest) {
+
+        // Validação de e-mail repetido
+        if (repository.findByEmail(usuarioRequest.getEmail()).isPresent()) {
+            throw new BadRequestException("O e-mail '" + usuarioRequest.getEmail() + "' já está sendo usado por outro usuário.");
         }
 
-        // Validação para nome da usuario ausente
-        if (usuario.getNomeUsuario() == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.usuario.badrequest",
-                    "O parâmento nomeUsuario deve constar na requisição");
-        }
-
-        // Validação para nome da usuario em branco
-        if (usuario.getNomeUsuario().isBlank()) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.usuario.badrequest",
-                    "O parâmetro nomeUsuario é obrigatório e não pode ser deixado em branco");
-        }
-
-        // validação para nome da usuario repetida
-        var novaUsuario = usuario.getNomeUsuario();
-        if (repository.findByNomeUsuarioIgnoreCase(novaUsuario) != null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.usuario.badrequest",
-                    "O parâmetro nomeUsuario deve ser único e já definido no banco de dados / nomeusuario: " + novaUsuario);
-        }
-        return repository.save(usuario);
+        Usuario novoUsuario = MapperUtil.parseObject(usuarioRequest, Usuario.class);
+        repository.save(novoUsuario);
+        return MapperUtil.parseObject(novoUsuario, UsuarioResponse.class);
     }
 
-    public List<Usuario> findAll() {
-        return repository.findAll();
+    public List<UsuarioResponse> findAll() {
+        return MapperUtil.parseListObjects(repository.findAll(), UsuarioResponse.class);
     }
 
-    public Usuario findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
-                        "unichristus.service.usuario.notfound",
-                        "A usuario com o id pesquisado não foi localizada"));
+    public UsuarioResponse findById(Long id) {
+        Usuario usuarioEmailRepetido = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O usuário com o id " + id + " não foi localizado."));
+        return MapperUtil.parseObject(usuarioEmailRepetido, UsuarioResponse.class);
     }
 
-    public Usuario update(Usuario usuario) {
-        // Validação para id digitado
-        if (usuario.getIdUsuario() == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.usuario.badrequest",
-                    "O parâmento idUsuario deve constar na requisição");
+    public UsuarioResponse update(UsuarioRequestUpdate usuarioRequestUpdate) {
+        Long id = usuarioRequestUpdate.getIdUsuario();
+
+        // 1. BUSCAR o objeto existente
+        Usuario usuarioAtualizado = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("O usuário com o id " + id + " não foi localizado para atualização."));
+
+        // 2. VALIDAR e-mail Repetido
+        Optional<Usuario> usuarioEmailRepetido = repository.findByEmail(usuarioRequestUpdate.getEmail());
+        if (usuarioEmailRepetido.isPresent() && !usuarioEmailRepetido.get().getIdUsuario().equals(id)) {
+            throw new BadRequestException("O e-mail '" + usuarioRequestUpdate.getEmail() + "' já está sendo usado por outro usuário.");
         }
 
-        // Validação para nome da usuario ausente
-        if (usuario.getNomeUsuario() == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.usuario.badrequest",
-                    "O parâmento nomeUsuario deve constar na requisição");
-        }
+        // 3. MODIFICAR/ATUALIZAR campos do DTO
+        usuarioAtualizado.setNomeUsuario(usuarioRequestUpdate.getNomeUsuario());
+        usuarioAtualizado.setEmail(usuarioRequestUpdate.getEmail());
+        usuarioAtualizado.setTelefone(usuarioRequestUpdate.getTelefone());
 
-        // Validação para nome da usuario em branco
-        if (usuario.getNomeUsuario().isBlank()) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.usuario.badrequest",
-                    "O parêmetro nomeUsuario é obrigatório e não pode ser deixado em branco");
-        }
-
-        return repository.save(usuario);
+        // 4. SALVAR o objeto modificado
+        repository.save(usuarioAtualizado);
+        return MapperUtil.parseObject(usuarioAtualizado, UsuarioResponse.class);
     }
 
     public void deleteById(Long id) {
         Usuario usuario = repository.findById(id)
-                .orElseThrow(() -> new ApiException(
-                        HttpStatus.NOT_FOUND,
-                        "unichristus.service.usuario.notfound",
-                        "A usuario com o id pesquisado não foi localizada"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O usuário com o id " + id + " não foi localizado."));
         repository.deleteById(id);
     }
 

@@ -1,9 +1,8 @@
 package br.edu.unichristus.biblioteca.service;
 
 import br.edu.unichristus.biblioteca.domain.dto.AutorDTO;
-import br.edu.unichristus.biblioteca.domain.dto.LivroDTO;
-import br.edu.unichristus.biblioteca.exception.ApiException;
 import br.edu.unichristus.biblioteca.domain.model.Autor;
+import br.edu.unichristus.biblioteca.exception.ApiException;
 import br.edu.unichristus.biblioteca.repository.AutorRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;

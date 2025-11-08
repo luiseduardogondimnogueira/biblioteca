@@ -9,11 +9,8 @@ import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
-
-import static br.edu.unichristus.biblioteca.domain.model.TipoTransacao.ACESSO;
 
 @Service
 public class TransacaoService {
@@ -103,7 +100,7 @@ public class TransacaoService {
             throw new ApiException(
                     HttpStatus.NOT_FOUND,
                     "unichristus.service.transacao.notfound",
-                    "A transacao com o id pesquisado não foi localizada");
+                    "A transacao com o idUsuario pesquisado não foi localizada");
         }
 
         return MapperUtil.parseListObjects(transacoesPesquisadas, TransacaoDTO.class);

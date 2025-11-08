@@ -1,26 +1,125 @@
 package br.edu.unichristus.biblioteca.exception;
 
-import br.edu.unichristus.biblioteca.domain.dto.ErrorDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+//@Order(Ordered.HIGHEST_PRECEDENCE)
+@RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ErrorDTO> handleApi(ApiException ex) {
-        log.error("ApiException: ( )", ex.getMessage(), ex);
-        return ResponseEntity.status(ex.getStatus()).
-                body(new ErrorDTO(ex.getMessage(), ex.getKey()));
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+        log.info("Recurso não localizado: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ApiError> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                    HttpServletRequest request) {
+        BindingResult result = ex.getBindingResult();
+
+        List<ApiFieldError> fieldErrors = result.getFieldErrors()
+                .stream()
+                .map(fe -> new ApiFieldError(
+                        fe.getField(),
+                        fe.getRejectedValue() == null ? "null" : String.valueOf(fe.getRejectedValue()),
+                        fe.getDefaultMessage()))
+                .collect(Collectors.toList());
+
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message("Falha na validação")
+                .fieldErrors(fieldErrors)
+                .path(request.getRequestURI())
+                .build();
+
+        log.debug("Erros de validação: {}", fieldErrors);
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<ApiError> handleConstraintViolation(ConstraintViolationException ex,
+                                                                 HttpServletRequest request) {
+        List<ApiFieldError> fieldErrors = ex.getConstraintViolations()
+                .stream()
+                .map(cv -> new ApiFieldError(
+                        cv.getPropertyPath().toString(),
+                        String.valueOf(cv.getInvalidValue()),
+                        cv.getMessage()))
+                .collect(Collectors.toList());
+
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message("Violações de restrição")
+                .fieldErrors(fieldErrors)
+                .path(request.getRequestURI())
+                .build();
+
+        log.debug("Violações de restrição: {}", fieldErrors);
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    protected ResponseEntity<ApiError> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
+
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        log.info("Requisição inválida: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    protected ResponseEntity<ApiError> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                    HttpServletRequest request) {
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message("Solicitação JSON malformada")
+                .path(request.getRequestURI())
+                .build();
+
+        log.warn("JSON malformado: {}", ex.getMessage());
+        return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDTO> handleApi(Exception ex) {
+    protected ResponseEntity<ApiError> handleAllExceptions(Exception ex, HttpServletRequest request) {
         log.error("Exceção não tratada", ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).
-                body(new ErrorDTO("Exceção não tratada", "unichristus.exception"));
+
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .message("Ocorreu um erro inesperado")
+                .path(request.getRequestURI())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

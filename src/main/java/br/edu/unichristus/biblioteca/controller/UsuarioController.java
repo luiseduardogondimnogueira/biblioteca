@@ -1,11 +1,14 @@
 package br.edu.unichristus.biblioteca.controller;
 
-import br.edu.unichristus.biblioteca.domain.model.Usuario;
+import br.edu.unichristus.biblioteca.domain.dto.UsuarioRequest;
+import br.edu.unichristus.biblioteca.domain.dto.UsuarioRequestUpdate;
+import br.edu.unichristus.biblioteca.domain.dto.UsuarioResponse;
 import br.edu.unichristus.biblioteca.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-        import java.util.List;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/usuario")
@@ -15,23 +18,23 @@ public class UsuarioController {
     private UsuarioService service;
 
     @PostMapping
-    private Usuario create(@RequestBody Usuario usuario) {
-        return service.create(usuario);
+    private UsuarioResponse create(@Valid @RequestBody UsuarioRequest usuarioRequest) {
+        return service.create(usuarioRequest);
     }
 
     @GetMapping("/all")
-    public List<Usuario> findAll() {
+    public List<UsuarioResponse> findAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public Usuario findById(@PathVariable(name = "id") Long id) {
+    public UsuarioResponse findById(@PathVariable(name = "id") Long id) {
         return service.findById(id);
     }
 
     @PutMapping
-    public Usuario update(@RequestBody Usuario usuario) {
-        return service.update(usuario);
+    public UsuarioResponse update(@Valid @RequestBody UsuarioRequestUpdate usuarioRequestUpdate) {
+        return service.update(usuarioRequestUpdate);
     }
 
     @DeleteMapping("/{id}")
