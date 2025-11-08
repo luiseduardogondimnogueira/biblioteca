@@ -1,10 +1,12 @@
 package br.edu.unichristus.biblioteca.controller;
 
-import br.edu.unichristus.biblioteca.domain.dto.AutorDTO;
-import br.edu.unichristus.biblioteca.domain.dto.LivroDTO;
-import br.edu.unichristus.biblioteca.domain.model.Autor;
+import br.edu.unichristus.biblioteca.domain.dto.AutorRequest;
+import br.edu.unichristus.biblioteca.domain.dto.AutorRequestUpdate;
+import br.edu.unichristus.biblioteca.domain.dto.AutorResponse;
+import br.edu.unichristus.biblioteca.domain.dto.LivroResponse;
 import br.edu.unichristus.biblioteca.service.AutorService;
 import br.edu.unichristus.biblioteca.service.LivroService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,40 +23,39 @@ public class AutorController {
     private LivroService livroService;
 
     @PostMapping
-    private Autor create(@RequestBody Autor autor) {
-        return service.create(autor);
+    private AutorResponse create(@Valid @RequestBody AutorRequest autorRequest) {
+        return service.create(autorRequest);
     }
 
     @GetMapping("/all")
-    public List<AutorDTO> findAll() {
+    public List<AutorResponse> findAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-//    public Autor findById(@PathVariable(name = "idAutor") Long id) {
-    public AutorDTO findById(@PathVariable(name = "id") Long idAutor) {
-            return service.findById(idAutor);
+    public AutorResponse findById(@PathVariable(name = "id") Long id) {
+            return service.findById(id);
     }
 
     @GetMapping("/{idAutor}/livros")
-    public List<LivroDTO> listarLivrosPorAutor(@PathVariable(name = "idAutor") Long id) {
-        List<LivroDTO> livrosDoAutor = livroService.listarLivrosPorAutor(id);
+    public List<LivroResponse> listarLivrosPorAutor(@PathVariable(name = "idAutor") Long id) {
+        List<LivroResponse> livrosDoAutor = livroService.listarLivrosPorAutor(id);
         return livrosDoAutor;
     }
 
     @GetMapping("/search")
-    public List<AutorDTO> findByNome(@RequestParam(name = "nomeAutor") String nome) {
+    public List<AutorResponse> findByNome(@RequestParam(name = "nomeAutor") String nome) {
         return service.findByName(nome);
     }
 
     @PutMapping
-    public Autor update(@RequestBody Autor autor) {
-        return service.update(autor);
+    public AutorResponse update(@Valid @RequestBody AutorRequestUpdate autorRequestUpdate) {
+        return service.update(autorRequestUpdate);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable(name = "id") Long idAutor) {
-        service.deleteById(idAutor);
+    public void delete(@PathVariable(name = "id") Long id) {
+        service.deleteById(id);
     }
 
 }

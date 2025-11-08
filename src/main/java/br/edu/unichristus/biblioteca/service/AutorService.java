@@ -1,8 +1,12 @@
 package br.edu.unichristus.biblioteca.service;
 
-import br.edu.unichristus.biblioteca.domain.dto.AutorDTO;
+import br.edu.unichristus.biblioteca.domain.dto.AutorRequest;
+import br.edu.unichristus.biblioteca.domain.dto.AutorRequestUpdate;
+import br.edu.unichristus.biblioteca.domain.dto.AutorResponse;
 import br.edu.unichristus.biblioteca.domain.model.Autor;
 import br.edu.unichristus.biblioteca.exception.ApiException;
+import br.edu.unichristus.biblioteca.exception.BadRequestException;
+import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
 import br.edu.unichristus.biblioteca.repository.AutorRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AutorService {
@@ -17,68 +22,59 @@ public class AutorService {
     @Autowired
     private AutorRepository repository;
 
-    public Autor create(Autor autor) {
-        // Validação para nome do Autor em branco
-        if (autor.getNomeAutor().isBlank()) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.user.badrequest",
-                    "O nome do autor é obrigatório");
-        }
-        // validação para nome do Autor maior que 100 caracteres
-        if (autor.getNomeAutor().length() > 100) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.user.badrequest",
-                    "O nome do autor não pode exceder 100 caracteres");
-        }
-        return repository.save(autor);
+    public AutorResponse create(AutorRequest autorRequest) {
+        Autor novoAutor = MapperUtil.parseObject(autorRequest, Autor.class);
+        repository.save(novoAutor);
+        return MapperUtil.parseObject(novoAutor, AutorResponse.class);
     }
 
-    public List<AutorDTO> findAll() {
-        return MapperUtil.parseListObjects(repository.findAll(), AutorDTO.class);
+    public List<AutorResponse> findAll() {
+        return MapperUtil.parseListObjects(repository.findAll(), AutorResponse.class);
 
     }
 
-    public AutorDTO findById(Long id) {
-        Autor autorPesquisado = repository.findById(id).
-                orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
-                        "unichristus.service.user.badrequest",
-                        "Autor não localizado com id: " + id));
-        return MapperUtil.parseObject(autorPesquisado, AutorDTO.class);
+    public AutorResponse findById(Long id) {
+        Autor autorPesquisado = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O autor com o id " + id + " não foi localizado."));
+        return MapperUtil.parseObject(autorPesquisado, AutorResponse.class);
 
     }
 
-    public List<AutorDTO> findByName(String nome) {
+    public List<AutorResponse> findByName(String nome) {
         List<Autor> autores = repository.findByNomeAutorContainingIgnoreCase(nome);
         if (autores.isEmpty()) {
-            throw new ApiException(HttpStatus.NOT_FOUND,
-                    "unichristus.service.user.badrequest",
-                    "Nenhum autor localizado com o nome: " + nome);
+            throw new ResourceNotFoundException(
+                    "Nenhum autor cujo nome contenha '" + nome + "' foi localizado.");
         }
-        return MapperUtil.parseListObjects(autores, AutorDTO.class);
+        return MapperUtil.parseListObjects(autores, AutorResponse.class);
     }
 
-    public Autor update(Autor autor) {
-        // Validação para nome do Autor em branco ou nulo
-        if (autor.getNomeAutor().isBlank()) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.user.badrequest",
-                    "O nome do autor é obrigatório");
-        }
-        // validação para nome de usuario maior que 100 caracteres
-        if (autor.getNomeAutor().length() > 100) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.user.badrequest",
-                    "O nome do autor não pode exceder 100 caracteres");
-        }
-        return repository.save(autor);
+    public AutorResponse update(AutorRequestUpdate autorRequestUpdate) {
+        Long id = autorRequestUpdate.getIdAutor();
+
+        // 1. BUSCAR o objeto existente
+        Autor autorAtualizar = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O autor com o id " + id + " não foi localizado para atualização."));
+
+        // 2. VALIDAR
+
+        // 3. MODIFICAR/ATUALIZAR (apenas campos do DTO)
+        autorAtualizar.setNomeAutor(autorRequestUpdate.getNomeAutor());
+        autorAtualizar.setDataNascimento(autorRequestUpdate.getDataNascimento());
+        autorAtualizar.setNacionalidade(autorRequestUpdate.getNacionalidade());
+        autorAtualizar.setBiografia(autorRequestUpdate.getBiografia());
+
+        // 4. SALVAR o objeto modificado
+        repository.save(autorAtualizar);
+        return MapperUtil.parseObject(autorAtualizar, AutorResponse.class);
     }
 
     public void deleteById(Long id) {
         Autor autor = repository.findById(id)
-                .orElseThrow(() -> new ApiException(
-                        HttpStatus.NOT_FOUND,
-                        "unichristus.service.autor.notfound",
-                        "Autor não localizado com id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O autor com o id " + id + " não foi localizado."));
         repository.deleteById(id);
     }
 

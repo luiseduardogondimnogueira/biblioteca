@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class AutorDTO {
+public class AutorResponse {
 
     private Long idAutor;
 

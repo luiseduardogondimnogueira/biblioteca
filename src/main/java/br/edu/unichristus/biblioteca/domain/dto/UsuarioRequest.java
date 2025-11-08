@@ -9,7 +9,7 @@ import lombok.Data;
 public class UsuarioRequest {
 
     @NotBlank(message = "O nome do usuário é obrigatório")
-    @Size(max=100,message = "O nome deve ter no máximo 100 caracteres")
+    @Size(max = 100, message = "O nome do usuário deve ter no máximo 100 caracteres")
     private String nomeUsuario;
 
     @NotBlank(message = "O e-mail é obrigatório")

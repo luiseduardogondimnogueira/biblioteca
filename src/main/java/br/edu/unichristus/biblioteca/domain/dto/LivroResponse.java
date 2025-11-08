@@ -1,12 +1,11 @@
 package br.edu.unichristus.biblioteca.domain.dto;
 
-import br.edu.unichristus.biblioteca.domain.model.Categoria;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class LivroDTO {
+public class LivroResponse {
 
     private Long idLivro;
 

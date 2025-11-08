@@ -1,9 +1,12 @@
 package br.edu.unichristus.biblioteca.service;
 
-import br.edu.unichristus.biblioteca.domain.dto.LivroDTO;
+import br.edu.unichristus.biblioteca.domain.dto.LivroResponse;
 import br.edu.unichristus.biblioteca.domain.dto.LivroFindAllDTO;
+import br.edu.unichristus.biblioteca.domain.model.Autor;
 import br.edu.unichristus.biblioteca.domain.model.Livro;
 import br.edu.unichristus.biblioteca.exception.ApiException;
+import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
+import br.edu.unichristus.biblioteca.repository.AutorRepository;
 import br.edu.unichristus.biblioteca.repository.LivroRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,9 @@ public class LivroService {
 
     @Autowired
     public LivroRepository repository;
+
+    @Autowired
+    private AutorRepository autorRepository;
 
     public Livro create(Livro livro) {
         // Validação para id digitado
@@ -55,17 +61,27 @@ public class LivroService {
         return MapperUtil.parseListObjects(livros, LivroFindAllDTO.class);
     }
 
-    public LivroDTO findById(Long id) {
+    public LivroResponse findById(Long id) {
         Livro livroPesquisado = repository.findById(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
                         "unichristus.service.livro.notfound",
                         "A livro com o id pesquisado não foi localizado"));
-        return MapperUtil.parseObject(livroPesquisado, LivroDTO.class);
+        return MapperUtil.parseObject(livroPesquisado, LivroResponse.class);
     }
 
-    public List<LivroDTO> listarLivrosPorAutor(long idAutor) {
+    public List<LivroResponse> listarLivrosPorAutor(long idAutor) {
+        Autor autorPesquisado = autorRepository.findById(idAutor)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O autor com o id " + idAutor + " não foi localizado."));
+        String nomeAutor = autorPesquisado.getNomeAutor();
+
         List<Livro> livros = repository.findByAutorIdAutor(idAutor);
-        return MapperUtil.parseListObjects(livros, LivroDTO.class);
+        if (livros.isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "Nenhum livro cadastrado para autor '" + nomeAutor + "' foi localizado.");
+        }
+
+        return MapperUtil.parseListObjects(livros, LivroResponse.class);
     }
 
     public Livro update(Livro livro) {

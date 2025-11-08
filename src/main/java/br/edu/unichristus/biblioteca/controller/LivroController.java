@@ -1,6 +1,6 @@
 package br.edu.unichristus.biblioteca.controller;
 
-import br.edu.unichristus.biblioteca.domain.dto.LivroDTO;
+import br.edu.unichristus.biblioteca.domain.dto.LivroResponse;
 import br.edu.unichristus.biblioteca.domain.dto.LivroFindAllDTO;
 import br.edu.unichristus.biblioteca.domain.model.Livro;
 import br.edu.unichristus.biblioteca.service.LivroService;
@@ -27,7 +27,7 @@ public class LivroController {
     }
 
     @GetMapping("/{id}")
-    public LivroDTO findById(@PathVariable(name = "id") Long idLivro) {
+    public LivroResponse findById(@PathVariable(name = "id") Long idLivro) {
         return service.findById(idLivro);
     }
 
