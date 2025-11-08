@@ -1,8 +1,11 @@
 package br.edu.unichristus.biblioteca.controller;
 
-import br.edu.unichristus.biblioteca.domain.dto.CategoriaDTO;
+import br.edu.unichristus.biblioteca.domain.dto.CategoriaRequest;
+import br.edu.unichristus.biblioteca.domain.dto.CategoriaRequestUpdate;
+import br.edu.unichristus.biblioteca.domain.dto.CategoriaResponse;
 import br.edu.unichristus.biblioteca.domain.model.Categoria;
 import br.edu.unichristus.biblioteca.service.CategoriaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,23 +19,23 @@ public class CategoriaController {
     private CategoriaService service;
 
     @PostMapping
-    private Categoria create(@RequestBody Categoria categoria) {
-        return service.create(categoria);
+    private CategoriaResponse create(@Valid @RequestBody CategoriaRequest categoriaRequest) {
+        return service.create(categoriaRequest);
     }
 
     @GetMapping("/all")
-    public List<CategoriaDTO> findAll() {
+    public List<CategoriaResponse> findAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public CategoriaDTO findById(@PathVariable(name = "id") Long idCategoria) {
-        return service.findById(idCategoria);
+    public CategoriaResponse findById(@PathVariable(name = "id") Long id) {
+        return service.findById(id);
     }
 
     @PutMapping
-    public Categoria update(@RequestBody Categoria categoria) {
-        return service.update(categoria);
+    public CategoriaResponse update(@Valid @RequestBody CategoriaRequestUpdate categoriaRequestUpdate) {
+        return service.update(categoriaRequestUpdate);
     }
 
     @DeleteMapping("/{id}")

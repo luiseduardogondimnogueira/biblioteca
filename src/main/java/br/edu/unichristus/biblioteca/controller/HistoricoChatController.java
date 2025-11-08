@@ -1,7 +1,11 @@
 package br.edu.unichristus.biblioteca.controller;
 
+import br.edu.unichristus.biblioteca.domain.dto.HistoricoChatRequest;
+import br.edu.unichristus.biblioteca.domain.dto.HistoricoChatRequestUpdate;
+import br.edu.unichristus.biblioteca.domain.dto.HistoricoChatResponse;
 import br.edu.unichristus.biblioteca.domain.model.HistoricoChat;
 import br.edu.unichristus.biblioteca.service.HistoricoChatService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,23 +19,23 @@ public class HistoricoChatController {
     private HistoricoChatService service;
 
     @PostMapping
-    private HistoricoChat create(@RequestBody HistoricoChat historicoChat) {
-        return service.create(historicoChat);
+    private HistoricoChatResponse create(@Valid @RequestBody HistoricoChatRequest historicoChatRequest) {
+        return service.create(historicoChatRequest);
     }
 
     @GetMapping("/all")
-    public List<HistoricoChat> findAll() {
+    public List<HistoricoChatResponse> findAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public HistoricoChat findById(@PathVariable(name = "id") Long id) {
+    public HistoricoChatResponse findById(@PathVariable(name = "id") Long id) {
         return service.findById(id);
     }
 
     @PutMapping
-    public HistoricoChat update(@RequestBody HistoricoChat historicoChat) {
-        return service.update(historicoChat);
+    public HistoricoChatResponse update(@Valid @RequestBody HistoricoChatRequestUpdate historicoChatRequestUpdate) {
+        return service.update(historicoChatRequestUpdate);
     }
 
     @DeleteMapping("/{id}")

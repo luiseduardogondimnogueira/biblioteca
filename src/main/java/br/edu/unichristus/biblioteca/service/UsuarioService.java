@@ -22,7 +22,7 @@ public class UsuarioService {
 
     public UsuarioResponse create(UsuarioRequest usuarioRequest) {
 
-        // Validação de e-mail repetido
+        // VALIDAR (e-mail Repetido)
         if (repository.findByEmail(usuarioRequest.getEmail()).isPresent()) {
             throw new BadRequestException("O e-mail '" + usuarioRequest.getEmail() + "' já está sendo usado por outro usuário.");
         }
@@ -37,20 +37,20 @@ public class UsuarioService {
     }
 
     public UsuarioResponse findById(Long id) {
-        Usuario usuarioEmailRepetido = repository.findById(id)
+        Usuario usuarioPesquisado = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "O usuário com o id " + id + " não foi localizado."));
-        return MapperUtil.parseObject(usuarioEmailRepetido, UsuarioResponse.class);
+        return MapperUtil.parseObject(usuarioPesquisado, UsuarioResponse.class);
     }
 
     public UsuarioResponse update(UsuarioRequestUpdate usuarioRequestUpdate) {
         Long id = usuarioRequestUpdate.getIdUsuario();
 
-        // 1. BUSCAR o objeto existente
+        // 1. BUSCAR o objeto
         Usuario usuarioAtualizar = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("O usuário com o id " + id + " não foi localizado para atualização."));
 
-        // 2. VALIDAR e-mail Repetido
+        // 2. VALIDAR (e-mail Repetido)
         Optional<Usuario> usuarioEmailRepetido = repository.findByEmail(usuarioRequestUpdate.getEmail());
         if (usuarioEmailRepetido.isPresent() && !usuarioEmailRepetido.get().getIdUsuario().equals(id)) {
             throw new BadRequestException("O e-mail '" + usuarioRequestUpdate.getEmail() + "' já está sendo usado por outro usuário.");
@@ -61,13 +61,13 @@ public class UsuarioService {
         usuarioAtualizar.setEmail(usuarioRequestUpdate.getEmail());
         usuarioAtualizar.setTelefone(usuarioRequestUpdate.getTelefone());
 
-        // 4. SALVAR o objeto modificado
+        // 4. SALVAR o objeto atualizado
         repository.save(usuarioAtualizar);
         return MapperUtil.parseObject(usuarioAtualizar, UsuarioResponse.class);
     }
 
     public void deleteById(Long id) {
-        Usuario usuario = repository.findById(id)
+        Usuario usuarioPesquisado = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "O usuário com o id " + id + " não foi localizado."));
         repository.deleteById(id);

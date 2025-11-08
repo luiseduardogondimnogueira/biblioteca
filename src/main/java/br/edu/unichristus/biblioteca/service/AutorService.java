@@ -10,7 +10,6 @@ import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
 import br.edu.unichristus.biblioteca.repository.AutorRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,12 +52,12 @@ public class AutorService {
     public AutorResponse update(AutorRequestUpdate autorRequestUpdate) {
         Long id = autorRequestUpdate.getIdAutor();
 
-        // 1. BUSCAR o objeto existente
+        // 1. BUSCAR o objeto
         Autor autorAtualizar = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "O autor com o id " + id + " não foi localizado para atualização."));
 
-        // 2. VALIDAR
+        // 2. VALIDAR (Regras de negócio)
 
         // 3. MODIFICAR/ATUALIZAR (apenas campos do DTO)
         autorAtualizar.setNomeAutor(autorRequestUpdate.getNomeAutor());
@@ -66,13 +65,13 @@ public class AutorService {
         autorAtualizar.setNacionalidade(autorRequestUpdate.getNacionalidade());
         autorAtualizar.setBiografia(autorRequestUpdate.getBiografia());
 
-        // 4. SALVAR o objeto modificado
+        // 4. SALVAR o objeto atualizado
         repository.save(autorAtualizar);
         return MapperUtil.parseObject(autorAtualizar, AutorResponse.class);
     }
 
     public void deleteById(Long id) {
-        Autor autor = repository.findById(id)
+        Autor autorPesquisado = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "O autor com o id " + id + " não foi localizado."));
         repository.deleteById(id);

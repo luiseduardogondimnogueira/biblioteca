@@ -1,8 +1,13 @@
 package br.edu.unichristus.biblioteca.service;
 
+import br.edu.unichristus.biblioteca.domain.dto.HistoricoChatRequest;
+import br.edu.unichristus.biblioteca.domain.dto.HistoricoChatRequestUpdate;
+import br.edu.unichristus.biblioteca.domain.dto.HistoricoChatResponse;
 import br.edu.unichristus.biblioteca.domain.model.HistoricoChat;
 import br.edu.unichristus.biblioteca.exception.ApiException;
+import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
 import br.edu.unichristus.biblioteca.repository.HistoricoChatRepository;
+import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,31 +20,47 @@ public class HistoricoChatService {
     @Autowired
     private HistoricoChatRepository repository;
 
-    public HistoricoChat create(HistoricoChat historicoChat) {
-        return repository.save(historicoChat);
+    public HistoricoChatResponse create(HistoricoChatRequest historicoChatRequest) {
+        HistoricoChat novoHistoricoChat = MapperUtil.parseObject(historicoChatRequest, HistoricoChat.class);
+        repository.save(novoHistoricoChat);
+        return MapperUtil.parseObject(novoHistoricoChat, HistoricoChatResponse.class);
     }
 
-    public List<HistoricoChat> findAll() {
-        return repository.findAll();
+    public List<HistoricoChatResponse> findAll() {
+        return MapperUtil.parseListObjects(repository.findAll(), HistoricoChatResponse.class);
     }
 
-    public HistoricoChat findById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
-                        "unichristus.service.historicochat.notfound",
-                        "O historicoChat com o id pesquisado não foi localizado"));
+    public HistoricoChatResponse findById(Long id) {
+        HistoricoChat historicoChatPesquisado = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O histórico de chat com o id " + id + " não foi localizado."));
+        return MapperUtil.parseObject(historicoChatPesquisado,HistoricoChatResponse.class);
     }
 
-    public HistoricoChat update(HistoricoChat historicoChat) {
-        return repository.save(historicoChat);
+    public HistoricoChatResponse update(HistoricoChatRequestUpdate historicoChatRequestUpdate) {
+        Long id = historicoChatRequestUpdate.getIdSession();
+
+        // 1. BUSCAR o objeto
+        HistoricoChat historicoChatAtualizar = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "A historicoChat com o id " + id + " não foi localizado para atualização."));
+
+        // 2. VALIDAR (Regras de negócio)
+
+        // 3. MODIFICAR/ATUALIZAR (apenas campos do DTO)
+        historicoChatAtualizar.setIdMessage(historicoChatRequestUpdate.getIdMessage());
+        historicoChatAtualizar.setMessage(historicoChatRequestUpdate.getMessage());
+        historicoChatAtualizar.setHorario(historicoChatRequestUpdate.getHorario());
+
+        // 4. SALVAR o objeto atualizado
+        repository.save(historicoChatAtualizar);
+        return MapperUtil.parseObject(historicoChatAtualizar, HistoricoChatResponse.class);
     }
 
     public void deleteById(Long id) {
-        HistoricoChat historicoChat = repository.findById(id)
-                .orElseThrow(() -> new ApiException(
-                        HttpStatus.NOT_FOUND,
-                        "unichristus.service.historicochat.notfound",
-                        "O historicoChat com o id pesquisado não foi localizado"));
+        HistoricoChat historicoChatPesquisado = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O histórico de chat com o id " + id + " não foi localizado."));
         repository.deleteById(id);
     }
 }
