@@ -19,7 +19,7 @@ public class HistoricoChatController {
     private HistoricoChatService service;
 
     @PostMapping
-    private HistoricoChatResponse create(@Valid @RequestBody HistoricoChatRequest historicoChatRequest) {
+    public HistoricoChatResponse create(@Valid @RequestBody HistoricoChatRequest historicoChatRequest) {
         return service.create(historicoChatRequest);
     }
 

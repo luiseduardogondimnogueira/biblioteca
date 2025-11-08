@@ -12,5 +12,4 @@ public class UsuarioResponse {
     private String email;
 
     private String telefone;
-
 }

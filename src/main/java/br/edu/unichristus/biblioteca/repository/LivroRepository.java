@@ -4,8 +4,11 @@ import br.edu.unichristus.biblioteca.domain.model.Livro;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LivroRepository extends JpaRepository<Livro, Long> {
+
+    Optional<Livro> findFirstByNomeLivroIgnoreCase(String nomeLivro);
 
     List<Livro> findByNomeLivroIgnoreCase(String nomeLivro);
 

@@ -14,5 +14,4 @@ public class HistoricoChatResponse {
     private String message;
 
     private LocalDateTime horario;
-
 }

@@ -23,11 +23,8 @@ public class LivroFindAllDTO {
     private BigDecimal preco;
 
 //    private String nomeAutor;
-
     private AutorSimplesDTO autor;
 
 //    private String nomeCategoria;
-
     private CategoriaSimplesDTO categoria;
-
 }

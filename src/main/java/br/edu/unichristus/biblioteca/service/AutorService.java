@@ -50,9 +50,9 @@ public class AutorService {
     }
 
     public AutorResponse update(AutorRequestUpdate autorRequestUpdate) {
-        Long id = autorRequestUpdate.getIdAutor();
 
         // 1. BUSCAR o objeto
+        Long id = autorRequestUpdate.getIdAutor();
         Autor autorAtualizar = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "O autor com o id " + id + " não foi localizado para atualização."));

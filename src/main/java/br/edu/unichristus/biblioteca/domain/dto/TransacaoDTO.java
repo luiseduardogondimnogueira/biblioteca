@@ -24,5 +24,4 @@ public class TransacaoDTO {
     private String urlDownload;
 
     private BigDecimal valor;
-
 }

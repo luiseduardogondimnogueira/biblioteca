@@ -23,7 +23,7 @@ public class AutorController {
     private LivroService livroService;
 
     @PostMapping
-    private AutorResponse create(@Valid @RequestBody AutorRequest autorRequest) {
+    public AutorResponse create(@Valid @RequestBody AutorRequest autorRequest) {
         return service.create(autorRequest);
     }
 

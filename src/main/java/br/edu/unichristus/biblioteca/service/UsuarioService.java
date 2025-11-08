@@ -44,9 +44,9 @@ public class UsuarioService {
     }
 
     public UsuarioResponse update(UsuarioRequestUpdate usuarioRequestUpdate) {
-        Long id = usuarioRequestUpdate.getIdUsuario();
 
         // 1. BUSCAR o objeto
+        Long id = usuarioRequestUpdate.getIdUsuario();
         Usuario usuarioAtualizar = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("O usuário com o id " + id + " não foi localizado para atualização."));
 

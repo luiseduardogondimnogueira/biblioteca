@@ -18,5 +18,4 @@ public class UsuarioRequest {
 
     @Size(min = 8, message = "O telefone deve ter no mínimo 8 dígitos")
     private String telefone;
-
 }

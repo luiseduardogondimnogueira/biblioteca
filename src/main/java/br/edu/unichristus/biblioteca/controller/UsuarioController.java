@@ -18,7 +18,7 @@ public class UsuarioController {
     private UsuarioService service;
 
     @PostMapping
-    private UsuarioResponse create(@Valid @RequestBody UsuarioRequest usuarioRequest) {
+    public UsuarioResponse create(@Valid @RequestBody UsuarioRequest usuarioRequest) {
         return service.create(usuarioRequest);
     }
 

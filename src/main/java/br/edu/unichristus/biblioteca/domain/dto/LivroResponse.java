@@ -22,5 +22,4 @@ public class LivroResponse {
     private String nomeAutor;
 
     private String nomeCategoria;
-
 }

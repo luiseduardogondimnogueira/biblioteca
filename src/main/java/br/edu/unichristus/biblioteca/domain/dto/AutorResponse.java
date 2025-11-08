@@ -16,5 +16,4 @@ public class AutorResponse {
     private String nacionalidade;
 
     private String biografia;
-
 }

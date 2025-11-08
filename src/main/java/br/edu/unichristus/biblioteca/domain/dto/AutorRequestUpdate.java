@@ -23,5 +23,4 @@ public class AutorRequestUpdate {
 
     @Size(max = 1000, message = "A biografia deve ter no máximo 1000 caracteres")
     private String biografia;
-
 }

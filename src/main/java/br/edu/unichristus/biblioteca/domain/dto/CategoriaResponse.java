@@ -12,5 +12,4 @@ public class CategoriaResponse {
     private String areaConhecimento;
 
     private String descricao;
-
 }

@@ -38,9 +38,9 @@ public class HistoricoChatService {
     }
 
     public HistoricoChatResponse update(HistoricoChatRequestUpdate historicoChatRequestUpdate) {
-        Long id = historicoChatRequestUpdate.getIdSession();
 
         // 1. BUSCAR o objeto
+        Long id = historicoChatRequestUpdate.getIdSession();
         HistoricoChat historicoChatAtualizar = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "A historicoChat com o id " + id + " não foi localizado para atualização."));

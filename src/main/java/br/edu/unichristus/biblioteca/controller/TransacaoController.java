@@ -16,7 +16,7 @@ public class TransacaoController {
     private TransacaoService service;
 
     @PostMapping
-    private Transacao create(@RequestBody Transacao transacao) {
+    public Transacao create(@RequestBody Transacao transacao) {
         return service.create(transacao);
     }
 

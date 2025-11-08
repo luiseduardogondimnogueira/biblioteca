@@ -19,7 +19,7 @@ public class CategoriaController {
     private CategoriaService service;
 
     @PostMapping
-    private CategoriaResponse create(@Valid @RequestBody CategoriaRequest categoriaRequest) {
+    public CategoriaResponse create(@Valid @RequestBody CategoriaRequest categoriaRequest) {
         return service.create(categoriaRequest);
     }
 

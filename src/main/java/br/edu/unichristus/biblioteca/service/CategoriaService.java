@@ -37,9 +37,9 @@ public class CategoriaService {
     }
 
     public CategoriaResponse update(CategoriaRequestUpdate categoriaRequestUpdate) {
-        Long id = categoriaRequestUpdate.getIdCategoria();
 
         // 1. BUSCAR o objeto
+        Long id = categoriaRequestUpdate.getIdCategoria();
         Categoria categoriaAtualizar = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "A categoria com o id " + id + " não foi localizada para atualização."));

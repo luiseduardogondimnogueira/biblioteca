@@ -1,9 +1,12 @@
 package br.edu.unichristus.biblioteca.controller;
 
+import br.edu.unichristus.biblioteca.domain.dto.LivroRequest;
+import br.edu.unichristus.biblioteca.domain.dto.LivroRequestUpdate;
 import br.edu.unichristus.biblioteca.domain.dto.LivroResponse;
 import br.edu.unichristus.biblioteca.domain.dto.LivroFindAllDTO;
 import br.edu.unichristus.biblioteca.domain.model.Livro;
 import br.edu.unichristus.biblioteca.service.LivroService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +20,8 @@ public class LivroController {
     private LivroService service;
 
     @PostMapping
-    private Livro create(@RequestBody Livro livro) {
-        return service.create(livro);
+    public LivroResponse create(@Valid @RequestBody LivroRequest livroRequest) {
+        return service.create(livroRequest);
     }
 
     @GetMapping("/all")
@@ -27,17 +30,17 @@ public class LivroController {
     }
 
     @GetMapping("/{id}")
-    public LivroResponse findById(@PathVariable(name = "id") Long idLivro) {
-        return service.findById(idLivro);
+    public LivroResponse findById(@PathVariable(name = "id") Long id) {
+        return service.findById(id);
     }
 
     @PutMapping
-    public Livro update(@RequestBody Livro livro) {
-        return service.update(livro);
+    public LivroResponse update(@Valid @RequestBody LivroRequestUpdate livroRequestUpdate) {
+        return service.update(livroRequestUpdate);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable(name = "id") Long idLivro) {
-        service.deleteById(idLivro);
+    public void delete(@PathVariable(name = "id") Long id) {
+        service.deleteById(id);
     }
 }
