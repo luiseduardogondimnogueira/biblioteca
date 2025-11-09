@@ -1,10 +1,13 @@
 package br.edu.unichristus.biblioteca.service;
 
-import br.edu.unichristus.biblioteca.domain.dto.TransacaoDTO;
-import br.edu.unichristus.biblioteca.domain.model.TipoTransacao;
-import br.edu.unichristus.biblioteca.domain.model.Transacao;
-import br.edu.unichristus.biblioteca.exception.ApiException;
+import br.edu.unichristus.biblioteca.domain.dto.TransacaoRequest;
+import br.edu.unichristus.biblioteca.domain.dto.TransacaoRequestUpdate;
+import br.edu.unichristus.biblioteca.domain.dto.TransacaoResponse;
+import br.edu.unichristus.biblioteca.domain.model.*;
+import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
+import br.edu.unichristus.biblioteca.repository.LivroRepository;
 import br.edu.unichristus.biblioteca.repository.TransacaoRepository;
+import br.edu.unichristus.biblioteca.repository.UsuarioRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,92 +21,123 @@ public class TransacaoService {
     @Autowired
     private TransacaoRepository repository;
 
-    public Transacao create(Transacao transacao) {
-        // Validação para id digitado
-        if (transacao.getIdTransacao() != null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.transacao.badrequest",
-                    "O parâmento idTransacao não deve constar na requisição");
-        }
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
-        // Validação para usuario inexistente
-//        if (transacao.getNomeTransacao() == null) {
-//            throw new ApiException(HttpStatus.BAD_REQUEST,
-//                    "unichristus.service.transacao.badrequest",
-//                    "O parâmento nomeTransacao deve constar na requisição");
-//        }
+    @Autowired
+    private LivroRepository livroRepository;
 
-        // Validação para livro inexistente
-//        if (transacao.getNomeTransacao().isBlank()) {
-//            throw new ApiException(HttpStatus.BAD_REQUEST,
-//                    "unichristus.service.transacao.badrequest",
-//                    "O parâmetro nomeTransacao é obrigatório e não pode ser deixado em branco");
-//        }
+    public TransacaoResponse create(TransacaoRequest transacaoRequest) {
 
-        // validação para tipo de transação
-//        var novaTransacao = transacao.getNomeTransacao();
-//        if (repository.findByNomeTransacaoIgnoreCase(novaTransacao) != null) {
-//            throw new ApiException(HttpStatus.BAD_REQUEST,
-//                    "unichristus.service.transacao.badrequest",
-//                    "O parâmetro nomeTransacao deve ser único e já definido no banco de dados / nometransacao: " + novaTransacao);
-//        }
-        return repository.save(transacao);
+        // VALIDAR (Usuario inexistente)
+        long idUsuario = transacaoRequest.getIdUsuario();
+        Usuario usuarioPesquisado = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O usuario com o id " + idUsuario + " não foi localizado."));
+
+        // VALIDAR (Livro inexistente)
+        long idLivro = transacaoRequest.getIdLivro();
+        Livro livroPesquisado = livroRepository.findById(idLivro)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O livro com o id " + idLivro + " não foi localizado."));
+
+        // MODIFICAR/ATUALIZAR (campos do DTO)
+        Transacao novaTransacao = new Transacao();
+        novaTransacao.setUsuario(usuarioPesquisado);
+        novaTransacao.setLivro(livroPesquisado);
+        novaTransacao.setTipo(transacaoRequest.getTipo());
+        novaTransacao.setDataHora(transacaoRequest.getDataHora());
+        novaTransacao.setUrlVisualizacao(transacaoRequest.getUrlVisualizacao());
+        novaTransacao.setUrlDownload(transacaoRequest.getUrlDownload());
+        novaTransacao.setValor(transacaoRequest.getValor());
+
+        // SALVAR o objeto atualizado
+        repository.save(novaTransacao);
+
+        return MapperUtil.parseObject(novaTransacao, TransacaoResponse.class);
     }
 
-    public List<TransacaoDTO> findAll() {
-        return MapperUtil.parseListObjects(repository.findAll(), TransacaoDTO.class);
+    public List<TransacaoResponse> findAll() {
+        return MapperUtil.parseListObjects(repository.findAll(), TransacaoResponse.class);
     }
 
-    public TransacaoDTO findById(Long id) {
+    public TransacaoResponse findById(Long id) {
         Transacao transacaoPesquisada = repository.findById(id)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,
-                        "unichristus.service.transacao.notfound",
-                        "A transacao com o id pesquisado não foi localizada"));
-        return MapperUtil.parseObject(transacaoPesquisada, TransacaoDTO.class);
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "A transação com o id " + id + " não foi localizada."));
+        return MapperUtil.parseObject(transacaoPesquisada, TransacaoResponse.class);
     }
 
-    public Transacao update(Transacao transacao) {
-        // Validação para id digitado
-        if (transacao.getIdTransacao() == null) {
-            throw new ApiException(HttpStatus.BAD_REQUEST,
-                    "unichristus.service.transacao.badrequest",
-                    "O parâmento idTransacao deve constar na requisição");
-        }
+    public TransacaoResponse update(TransacaoRequestUpdate transacaoRequestUpdate) {
 
-        // Validação para usuario inexistente
+        // BUSCAR o objeto
+        Long id = transacaoRequestUpdate.getIdTransacao();
+        Transacao transacaoAtualizar = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "A transacao com o id " + id + " não foi localizada para atualização."));
 
-        // Validação para livro inexistente
+        // VALIDAR (Usuario inexistente)
+        long idUsuario = transacaoRequestUpdate.getIdUsuario();
+        Usuario usuarioPesquisado = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O usuario com o id " + idUsuario + " não foi localizado."));
 
-        // validação para tipo de transação
+        // VALIDAR (Livro inexistente)
+        long idLivro = transacaoRequestUpdate.getIdLivro();
+        Livro livroPesquisado = livroRepository.findById(idLivro)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O livro com o id " + idLivro + " não foi localizado."));
 
-        return repository.save(transacao);
+        // MODIFICAR/ATUALIZAR (campos do DTO)
+        transacaoAtualizar.setUsuario(usuarioPesquisado);
+        transacaoAtualizar.setLivro(livroPesquisado);
+        transacaoAtualizar.setTipo(transacaoRequestUpdate.getTipo());
+        transacaoAtualizar.setDataHora(transacaoRequestUpdate.getDataHora());
+        transacaoAtualizar.setUrlVisualizacao(transacaoRequestUpdate.getUrlVisualizacao());
+        transacaoAtualizar.setUrlDownload(transacaoRequestUpdate.getUrlDownload());
+        transacaoAtualizar.setValor(transacaoRequestUpdate.getValor());
+
+        // SALVAR o objeto atualizado
+        repository.save(transacaoAtualizar);
+
+        return MapperUtil.parseObject(transacaoAtualizar, TransacaoResponse.class);
     }
 
     public void deleteById(Long id) {
         Transacao transacaoPesquisada = repository.findById(id)
-                .orElseThrow(() -> new ApiException(
-                        HttpStatus.NOT_FOUND,
-                        "unichristus.service.transacao.notfound",
-                        "A transacao com o id pesquisado não foi localizada"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "A transação com o id " + id + " não foi localizada."));
         repository.deleteById(id);
     }
 
-    public List<TransacaoDTO> findTransacaoByUsuario(Long id, TipoTransacao tipo) {
+
+    // ----- FEATURES ----- //
+
+
+    public List<TransacaoResponse> findTransacaoByUsuario(Long id, TipoTransacao tipo) {
+
+        // VALIDAR (Usuario inexistente)
+        Usuario usuarioPesquisado = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O usuario com o id " + id + " não foi localizado."));
+
         List<Transacao> transacoesPesquisadas;
 
         if (tipo == null) {
             transacoesPesquisadas = repository.findByUsuario_idUsuarioOrderByDataHoraDesc(id);
+            if (transacoesPesquisadas == null || transacoesPesquisadas.isEmpty()) {
+                throw new ResourceNotFoundException(
+                        "Nenhuma transação do usuario com o id " + id + " foi localizada.");
+            }
         } else {
             transacoesPesquisadas = repository.findByUsuario_idUsuarioAndTipoOrderByDataHoraDesc(id, tipo);
-        }
-        if (transacoesPesquisadas == null || transacoesPesquisadas.isEmpty()) {
-            throw new ApiException(
-                    HttpStatus.NOT_FOUND,
-                    "unichristus.service.transacao.notfound",
-                    "A transacao com o idUsuario pesquisado não foi localizada");
+            if (transacoesPesquisadas == null || transacoesPesquisadas.isEmpty()) {
+                throw new ResourceNotFoundException(
+                        "Nenhuma transação de " + tipo + " do usuario com o id " + id + "foi localizada.");
+            }
         }
 
-        return MapperUtil.parseListObjects(transacoesPesquisadas, TransacaoDTO.class);
+        return MapperUtil.parseListObjects(transacoesPesquisadas, TransacaoResponse.class);
     }
 
 }

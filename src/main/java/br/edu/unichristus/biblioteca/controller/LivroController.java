@@ -3,8 +3,7 @@ package br.edu.unichristus.biblioteca.controller;
 import br.edu.unichristus.biblioteca.domain.dto.LivroRequest;
 import br.edu.unichristus.biblioteca.domain.dto.LivroRequestUpdate;
 import br.edu.unichristus.biblioteca.domain.dto.LivroResponse;
-import br.edu.unichristus.biblioteca.domain.dto.LivroFindAllDTO;
-import br.edu.unichristus.biblioteca.domain.model.Livro;
+import br.edu.unichristus.biblioteca.domain.dto.LivroResponseFindAll;
 import br.edu.unichristus.biblioteca.service.LivroService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class LivroController {
     }
 
     @GetMapping("/all")
-    public List<LivroFindAllDTO> findAll() {
+    public List<LivroResponseFindAll> findAll() {
         return service.findAll();
     }
 

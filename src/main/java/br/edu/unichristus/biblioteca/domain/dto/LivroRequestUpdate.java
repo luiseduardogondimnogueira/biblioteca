@@ -10,26 +10,26 @@ import java.math.BigDecimal;
 @Data
 public class LivroRequestUpdate {
 
-    @NotNull
+    @NotNull(message = "O id do livro é obrigatório")
     private Long idLivro;
 
-    @NotBlank
+    @NotBlank(message = "O nome do livro é obrigatório")
     private String nomeLivro;
 
     private Integer anoPublicacao;
 
-    @Size(max = 1000, message = "A urlVisualizacao deve ter no máximo 1000 caracteres")
+    @Size(max = 1000, message = "A url de visualização deve ter no máximo 1000 caracteres")
     private String urlVisualizacao;
 
-    @Size(max = 1000, message = "A urlDownload deve ter no máximo 1000 caracteres")
+    @Size(max = 1000, message = "A url de download deve ter no máximo 1000 caracteres")
     private String urlDownload;
 
     private BigDecimal preco;
 
-    @NotNull
+    @NotNull(message = "O id do autor é obrigatório")
     private Long idAutor;
 
-    @NotNull
+    @NotNull(message = "O id da categoria é obrigatório")
     private Long idCategoria;
 
 }

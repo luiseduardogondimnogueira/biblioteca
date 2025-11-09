@@ -1,11 +1,15 @@
 package br.edu.unichristus.biblioteca.controller;
 
-import br.edu.unichristus.biblioteca.domain.dto.TransacaoDTO;
+import br.edu.unichristus.biblioteca.domain.dto.TransacaoRequest;
+import br.edu.unichristus.biblioteca.domain.dto.TransacaoRequestUpdate;
+import br.edu.unichristus.biblioteca.domain.dto.TransacaoResponse;
 import br.edu.unichristus.biblioteca.domain.model.TipoTransacao;
 import br.edu.unichristus.biblioteca.domain.model.Transacao;
 import br.edu.unichristus.biblioteca.service.TransacaoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -16,33 +20,39 @@ public class TransacaoController {
     private TransacaoService service;
 
     @PostMapping
-    public Transacao create(@RequestBody Transacao transacao) {
-        return service.create(transacao);
+    public TransacaoResponse create(@Valid @RequestBody TransacaoRequest transacaoRequest) {
+        return service.create(transacaoRequest);
     }
 
     @GetMapping("/all")
-    public List<TransacaoDTO> findAll() {
+    public List<TransacaoResponse> findAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public TransacaoDTO findById(@PathVariable(name = "id") Long idTransacao) {
-        return service.findById(idTransacao);
+    public TransacaoResponse findById(@PathVariable(name = "id") Long id) {
+        return service.findById(id);
     }
 
     @PutMapping
-    public Transacao update(@RequestBody Transacao transacao) {
-        return service.update(transacao);
+    public TransacaoResponse update(@Valid @RequestBody TransacaoRequestUpdate transacaoRequestUpdate) {
+        return service.update(transacaoRequestUpdate);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable(name = "id") Long idTransacao) {
-        service.deleteById(idTransacao);
+    public void delete(@PathVariable(name = "id") Long id) {
+        service.deleteById(id);
     }
 
+
+    // ----- FEATURES ----- //
+
+
     @GetMapping("/usuario/{id}")
-    public List<TransacaoDTO> findByUsuario(@PathVariable(name = "id") Long idUsuario,
-                                            @RequestParam(required = false) TipoTransacao tipo) {
+    public List<TransacaoResponse> findByUsuario(
+            @PathVariable(name = "id") Long idUsuario,
+            @RequestParam(required = false) TipoTransacao tipo) {
         return service.findTransacaoByUsuario(idUsuario, tipo);
     }
+
 }

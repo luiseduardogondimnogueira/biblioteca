@@ -3,11 +3,10 @@ package br.edu.unichristus.biblioteca.service;
 import br.edu.unichristus.biblioteca.domain.dto.LivroRequest;
 import br.edu.unichristus.biblioteca.domain.dto.LivroRequestUpdate;
 import br.edu.unichristus.biblioteca.domain.dto.LivroResponse;
-import br.edu.unichristus.biblioteca.domain.dto.LivroFindAllDTO;
+import br.edu.unichristus.biblioteca.domain.dto.LivroResponseFindAll;
 import br.edu.unichristus.biblioteca.domain.model.Autor;
 import br.edu.unichristus.biblioteca.domain.model.Categoria;
 import br.edu.unichristus.biblioteca.domain.model.Livro;
-import br.edu.unichristus.biblioteca.exception.ApiException;
 import br.edu.unichristus.biblioteca.exception.BadRequestException;
 import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
 import br.edu.unichristus.biblioteca.repository.AutorRepository;
@@ -15,7 +14,6 @@ import br.edu.unichristus.biblioteca.repository.CategoriaRepository;
 import br.edu.unichristus.biblioteca.repository.LivroRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,6 +53,7 @@ public class LivroService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "A categoria com o id " + idCategoria + " não foi localizada."));
 
+        // MODIFICAR/ATUALIZAR (campos do DTO)
         Livro novoLivro = new Livro();
         novoLivro.setNomeLivro(livroRequest.getNomeLivro());
         novoLivro.setAnoPublicacao(livroRequest.getAnoPublicacao());
@@ -63,15 +62,16 @@ public class LivroService {
         novoLivro.setPreco(livroRequest.getPreco());
         novoLivro.setAutor(autorPesquisado);
         novoLivro.setCategoria(categoriaPesquisada);
+
+        // SALVAR o objeto atualizado
         repository.save(novoLivro);
 
         return MapperUtil.parseObject(novoLivro, LivroResponse.class);
     }
 
-    public List<LivroFindAllDTO> findAll() {
+    public List<LivroResponseFindAll> findAll() {
         List<Livro> livros = repository.findAll();
-//        return MapperUtil.parseListObjects(livros, LivroResponse.class);
-        return MapperUtil.parseListObjects(livros, LivroFindAllDTO.class);
+        return MapperUtil.parseListObjects(livros, LivroResponseFindAll.class);
     }
 
     public LivroResponse findById(Long id) {
@@ -81,30 +81,15 @@ public class LivroService {
         return MapperUtil.parseObject(livroPesquisado, LivroResponse.class);
     }
 
-    public List<LivroResponse> listarLivrosPorAutor(long idAutor) {
-        Autor autorPesquisado = autorRepository.findById(idAutor)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "O autor com o id " + idAutor + " não foi localizado."));
-        String nomeAutor = autorPesquisado.getNomeAutor();
-
-        List<Livro> livros = repository.findByAutorIdAutor(idAutor);
-        if (livros.isEmpty()) {
-            throw new ResourceNotFoundException(
-                    "Nenhum livro cadastrado para autor '" + nomeAutor + "' foi localizado.");
-        }
-
-        return MapperUtil.parseListObjects(livros, LivroResponse.class);
-    }
-
     public LivroResponse update(LivroRequestUpdate livroRequestUpdate) {
 
-        // 1. BUSCAR o objeto
+        // BUSCAR o objeto
         Long id = livroRequestUpdate.getIdLivro();
         Livro livroAtualizar = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "O livro com o id " + id + " não foi localizado para atualização."));
 
-        // 2. VALIDAR (Livro com nome repetido)
+        // VALIDAR (Livro com nome repetido)
         String nomeLivro = livroRequestUpdate.getNomeLivro();
         Optional<Livro> livroComMesmoNome = repository.findFirstByNomeLivroIgnoreCase(livroRequestUpdate.getNomeLivro());
         if (livroComMesmoNome.isPresent() && !livroComMesmoNome.get().getIdLivro().equals(id)) {
@@ -123,6 +108,7 @@ public class LivroService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "A categoria com o id " + idCategoria + " não foi localizada."));
 
+        // MODIFICAR/ATUALIZAR (campos do DTO)
         livroAtualizar.setNomeLivro(livroRequestUpdate.getNomeLivro());
         livroAtualizar.setAnoPublicacao(livroRequestUpdate.getAnoPublicacao());
         livroAtualizar.setUrlVisualizacao(livroRequestUpdate.getUrlVisualizacao());
@@ -130,6 +116,8 @@ public class LivroService {
         livroAtualizar.setPreco(livroRequestUpdate.getPreco());
         livroAtualizar.setAutor(autorPesquisado);
         livroAtualizar.setCategoria(categoriaPesquisada);
+
+        // SALVAR o objeto atualizado
         repository.save(livroAtualizar);
 
         return MapperUtil.parseObject(livroAtualizar, LivroResponse.class);
@@ -140,6 +128,25 @@ public class LivroService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "O livro com o id " + id + " não foi localizado."));
         repository.deleteById(id);
+    }
+
+
+    // ----- FEATURES ----- //
+
+
+    public List<LivroResponse> listarLivrosPorAutor(long idAutor) {
+        Autor autorPesquisado = autorRepository.findById(idAutor)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O autor com o id " + idAutor + " não foi localizado."));
+        String nomeAutor = autorPesquisado.getNomeAutor();
+
+        List<Livro> livros = repository.findByAutorIdAutor(idAutor);
+        if (livros.isEmpty()) {
+            throw new ResourceNotFoundException(
+                    "Nenhum livro cadastrado para autor '" + nomeAutor + "' foi localizado.");
+        }
+
+        return MapperUtil.parseListObjects(livros, LivroResponse.class);
     }
 
 }

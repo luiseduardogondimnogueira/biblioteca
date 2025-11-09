@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class HistoricoChatRequest {
 
-    @NotBlank
+    @NotBlank(message = "O id da messagem é obrigatório")
     private String idMessage;
 
     private String message;

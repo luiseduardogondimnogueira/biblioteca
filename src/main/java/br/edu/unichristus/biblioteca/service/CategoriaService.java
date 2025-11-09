@@ -4,7 +4,6 @@ import br.edu.unichristus.biblioteca.domain.dto.CategoriaRequest;
 import br.edu.unichristus.biblioteca.domain.dto.CategoriaRequestUpdate;
 import br.edu.unichristus.biblioteca.domain.dto.CategoriaResponse;
 import br.edu.unichristus.biblioteca.domain.model.Categoria;
-import br.edu.unichristus.biblioteca.exception.ApiException;
 import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
 import br.edu.unichristus.biblioteca.repository.CategoriaRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
@@ -38,21 +37,22 @@ public class CategoriaService {
 
     public CategoriaResponse update(CategoriaRequestUpdate categoriaRequestUpdate) {
 
-        // 1. BUSCAR o objeto
+        // BUSCAR o objeto
         Long id = categoriaRequestUpdate.getIdCategoria();
         Categoria categoriaAtualizar = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "A categoria com o id " + id + " não foi localizada para atualização."));
 
-        // 2. VALIDAR (Regras de negócio)
+        // VALIDAR (Regras de negócio)
 
-        // 3. MODIFICAR/ATUALIZAR (apenas campos do DTO)
+        // MODIFICAR/ATUALIZAR (campos do DTO)
         categoriaAtualizar.setNomeCategoria(categoriaRequestUpdate.getNomeCategoria());
         categoriaAtualizar.setAreaConhecimento(categoriaRequestUpdate.getAreaConhecimento());
         categoriaAtualizar.setDescricao(categoriaRequestUpdate.getDescricao());
 
-        // 4. SALVAR o objeto atualizado
+        // SALVAR o objeto atualizado
         repository.save(categoriaAtualizar);
+
         return MapperUtil.parseObject(categoriaAtualizar, CategoriaResponse.class);
     }
 

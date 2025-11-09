@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 @Data
 public class HistoricoChatRequestUpdate {
 
-    @NotNull
+    @NotNull(message = "O id da sessão é obrigatório")
     private long idSession;
 
-    @NotBlank
+    @NotBlank(message = "O id da messagem é obrigatório")
     private String idMessage;
 
     private String message;

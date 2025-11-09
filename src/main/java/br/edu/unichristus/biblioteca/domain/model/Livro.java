@@ -32,12 +32,12 @@ public class Livro {
 
     // Relacionamento Many-to-One com Autor: Vários Livros para 1 Autor
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idAutor") //, nullable = false)
+    @JoinColumn(name = "idAutor")   //, nullable = false)
     private Autor autor;
 
     // Relacionamento Many-to-One com Categoria: Vários Livros para 1 Categoria
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idCategoria") //, nullable = false)
+    @JoinColumn(name = "idCategoria")   //, nullable = false)
     private Categoria categoria;
 
 }

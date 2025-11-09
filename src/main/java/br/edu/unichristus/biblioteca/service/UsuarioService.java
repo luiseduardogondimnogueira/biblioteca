@@ -29,6 +29,7 @@ public class UsuarioService {
 
         Usuario novoUsuario = MapperUtil.parseObject(usuarioRequest, Usuario.class);
         repository.save(novoUsuario);
+
         return MapperUtil.parseObject(novoUsuario, UsuarioResponse.class);
     }
 
@@ -45,24 +46,25 @@ public class UsuarioService {
 
     public UsuarioResponse update(UsuarioRequestUpdate usuarioRequestUpdate) {
 
-        // 1. BUSCAR o objeto
+        // BUSCAR o objeto
         Long id = usuarioRequestUpdate.getIdUsuario();
         Usuario usuarioAtualizar = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("O usuário com o id " + id + " não foi localizado para atualização."));
 
-        // 2. VALIDAR (e-mail Repetido)
+        // VALIDAR (e-mail Repetido)
         Optional<Usuario> usuarioEmailRepetido = repository.findByEmail(usuarioRequestUpdate.getEmail());
         if (usuarioEmailRepetido.isPresent() && !usuarioEmailRepetido.get().getIdUsuario().equals(id)) {
             throw new BadRequestException("O e-mail '" + usuarioRequestUpdate.getEmail() + "' já está sendo usado por outro usuário.");
         }
 
-        // 3. MODIFICAR/ATUALIZAR (apenas campos do DTO)
+        // MODIFICAR/ATUALIZAR (apenas campos do DTO)
         usuarioAtualizar.setNomeUsuario(usuarioRequestUpdate.getNomeUsuario());
         usuarioAtualizar.setEmail(usuarioRequestUpdate.getEmail());
         usuarioAtualizar.setTelefone(usuarioRequestUpdate.getTelefone());
 
-        // 4. SALVAR o objeto atualizado
+        // SALVAR o objeto atualizado
         repository.save(usuarioAtualizar);
+
         return MapperUtil.parseObject(usuarioAtualizar, UsuarioResponse.class);
     }
 

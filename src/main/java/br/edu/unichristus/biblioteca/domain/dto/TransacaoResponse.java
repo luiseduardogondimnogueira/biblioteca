@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class TransacaoDTO {
+public class TransacaoResponse {
 
     private Long idTransacao;
 
@@ -24,4 +24,5 @@ public class TransacaoDTO {
     private String urlDownload;
 
     private BigDecimal valor;
+
 }

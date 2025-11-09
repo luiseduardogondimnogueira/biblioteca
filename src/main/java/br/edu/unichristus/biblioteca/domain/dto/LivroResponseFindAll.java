@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 // evitar loop infinito, mas permitindo que a estrutura fique aninhada
 
 @Data
-public class LivroFindAllDTO {
+public class LivroResponseFindAll {
 
     private Long idLivro;
 
@@ -23,8 +23,8 @@ public class LivroFindAllDTO {
     private BigDecimal preco;
 
 //    private String nomeAutor;
-    private AutorSimplesDTO autor;
+    private AutorSimples autor;
 
 //    private String nomeCategoria;
-    private CategoriaSimplesDTO categoria;
+    private CategoriaSimples categoria;
 }

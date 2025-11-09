@@ -81,6 +81,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
+    @ExceptionHandler(ResourceConflictException.class)
+    protected ResponseEntity<ApiError> handleConflict(ResourceConflictException ex, HttpServletRequest request) {
+        ApiError error = ApiError.builder()
+                .status(HttpStatus.CONFLICT.value())
+                .error(HttpStatus.CONFLICT.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        log.info("Conflito de recurso: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     @ExceptionHandler(BadRequestException.class)
     protected ResponseEntity<ApiError> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
 

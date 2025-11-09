@@ -17,6 +17,6 @@ public class AutorRequest {
 
     private String nacionalidade;
 
-    @Size(max = 1000, message = "A biografia deve ter no máximo 1000 caracteres")
+    @Size(max = 1000, message = "A url da biografia deve ter no máximo 1000 caracteres")
     private String biografia;
 }
