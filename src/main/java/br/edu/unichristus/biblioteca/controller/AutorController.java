@@ -92,7 +92,8 @@ public class AutorController {
     // ----- FEATURES ----- //
 
 
-    @Operation(summary = "Busca autores por nome", description = "Pesquisa retorna todos os autores onde o nome contenha o termo informado")
+    @Operation(summary = "Busca autores por nome * FEATURE *",
+            description = "Pesquisa retorna todos os autores onde o nome contenha o termo informado")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Pesquisa concluída",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = AutorResponse.class)))),
@@ -102,7 +103,7 @@ public class AutorController {
         return service.findByName(nome);
     }
 
-    @Operation(summary = "Retorna todos os livros de um autor, especificado por id",
+    @Operation(summary = "Retorna todos os livros de um autor, especificado por id * FEATURE *",
             description = "Retorna todos os livros de um autor, especificado por id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Livros do autor",

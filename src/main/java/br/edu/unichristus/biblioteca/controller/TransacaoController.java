@@ -1,13 +1,10 @@
 package br.edu.unichristus.biblioteca.controller;
 
-import br.edu.unichristus.biblioteca.domain.dto.AutorResponse;
-import br.edu.unichristus.biblioteca.domain.dto.TransacaoRequest;
-import br.edu.unichristus.biblioteca.domain.dto.TransacaoRequestUpdate;
-import br.edu.unichristus.biblioteca.domain.dto.TransacaoResponse;
+import br.edu.unichristus.biblioteca.domain.dto.*;
 import br.edu.unichristus.biblioteca.domain.model.TipoTransacao;
-import br.edu.unichristus.biblioteca.domain.model.Transacao;
 import br.edu.unichristus.biblioteca.service.TransacaoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -87,7 +85,7 @@ public class TransacaoController {
     // ----- FEATURES ----- //
 
 
-    @Operation(summary = "Busca transações de um usuário",
+    @Operation(summary = "Busca transações de um usuário * FEATURE *",
             description = "Retorna todas as transações associadas a um usuário especificada pelo seu id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de transações",
@@ -98,6 +96,37 @@ public class TransacaoController {
             @PathVariable(name = "id") Long idUsuario,
             @RequestParam(required = false) TipoTransacao tipo) {
         return service.findTransacaoByUsuario(idUsuario, tipo);
+    }
+
+    @Operation(summary = "Busca o total de transações de um livro * FEATURE *",
+            description = "Retorna o número total de transações associadas a um livro de um determinado tipo (ACESSO ou DOWNLOAD).")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Total de transações",
+                    content = @Content(mediaType = "application/json", schema = @Schema(type = "integer", example = "15"))),
+            @ApiResponse(responseCode = "404", description = "Livro ou transações do tipo especificado não encontrados")})
+    @GetMapping("/livro/{id}/{tipo}")
+    public ResponseEntity<Long> countByLivroAndTipo(
+            @Parameter(description = "ID do livro", example = "1")
+            @PathVariable Long id,
+            @Parameter(description = "Tipo da transação (ACESSO ou DOWNLOAD)", example = "DOWNLOAD")
+            @PathVariable TipoTransacao tipo) {
+        long total = service.countByLivroAndTipo(id, tipo);
+        return ResponseEntity.ok(total);
+    }
+
+    @Operation(
+            summary = "Resumo de transações por usuário * FEATURE *",
+            description = "Retorna totais de acessos, downloads e faturamento (soma de valores) de todas as transações, por usuário."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = AutorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Nenhum resumo encontrado",
+                    content = @Content)})
+    @GetMapping("/resumo")
+    public ResponseEntity<List<TransacaoResumoPorUsuario>> findResumoByUsuario() {
+        List<TransacaoResumoPorUsuario> resumo = service.findResumoByUsuario();
+        return ResponseEntity.ok(resumo);
     }
 
 }

@@ -3,6 +3,7 @@ package br.edu.unichristus.biblioteca.service;
 import br.edu.unichristus.biblioteca.domain.dto.TransacaoRequest;
 import br.edu.unichristus.biblioteca.domain.dto.TransacaoRequestUpdate;
 import br.edu.unichristus.biblioteca.domain.dto.TransacaoResponse;
+import br.edu.unichristus.biblioteca.domain.dto.TransacaoResumoPorUsuario;
 import br.edu.unichristus.biblioteca.domain.model.*;
 import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
 import br.edu.unichristus.biblioteca.repository.LivroRepository;
@@ -10,7 +11,6 @@ import br.edu.unichristus.biblioteca.repository.TransacaoRepository;
 import br.edu.unichristus.biblioteca.repository.UsuarioRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -113,7 +113,6 @@ public class TransacaoService {
 
 
     public List<TransacaoResponse> findTransacaoByUsuario(Long id, TipoTransacao tipo) {
-
         // VALIDAR (Usuario inexistente)
         Usuario usuarioPesquisado = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -138,4 +137,29 @@ public class TransacaoService {
         return MapperUtil.parseListObjects(transacoesPesquisadas, TransacaoResponse.class);
     }
 
+    public long countByLivroAndTipo(Long idLivro, TipoTransacao tipo) {
+        // VALIDAR (Livro inexistente)
+        Livro livroPesquisado = livroRepository.findById(idLivro)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "O livro com o id " + idLivro + " não foi localizado."));
+
+        // VALIDAR (Transações com livro)
+        boolean temTransacoes = repository.existsByLivro_IdLivroAndTipo(idLivro, tipo);
+        if (!temTransacoes) {
+            throw new ResourceNotFoundException(
+                    "Não foi possível localizar transações do tipo " + tipo + " para o livro de id " + idLivro);
+        }
+
+        return repository.countByLivro_IdLivroAndTipo(idLivro, tipo);
+    }
+
+    public List<TransacaoResumoPorUsuario> findResumoByUsuario() {
+        List<TransacaoResumoPorUsuario> resumo = repository.ResumoPorUsuario();
+
+        if (resumo == null || resumo.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum resumo de transações por usuário foi localizado.");
+        }
+
+        return resumo;
+    }
 }
