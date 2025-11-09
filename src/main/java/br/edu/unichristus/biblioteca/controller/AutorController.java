@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/autor")
-@Tag(name = "Autor", description = "Operações relacionadas aos autores")
+@Tag(name = "Autor", description = "Operações relacionadas à manutenção dos autores | Entidade AUTOR")
 public class AutorController {
 
     @Autowired
@@ -31,7 +31,7 @@ public class AutorController {
     private LivroService livroService;
 
     @Operation(summary = "Cadastra os dados de um novo autor",
-            description = "Cria um novo autor. Requer role: [ADMIN]")
+            description = "Cria um novo autor")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Autor criado com sucesso",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = AutorResponse.class))),
@@ -52,7 +52,7 @@ public class AutorController {
     }
 
     @Operation(summary = "Busca um autor por id",
-            description = "Retorna os dados do autor especificado pelo id")
+            description = "Retorna os dados do autor especificado pelo seu id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Autor encontrado",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = AutorResponse.class))),
@@ -64,7 +64,7 @@ public class AutorController {
 
     @Operation(
             summary = "Atualiza os dados de um autor existente",
-            description = "Atualiza um autor. Requer role: [ADMIN]")
+            description = "Atualiza os dados de um autor")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Autor atualizado com sucesso",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = AutorResponse.class))),
@@ -76,14 +76,14 @@ public class AutorController {
     }
 
     @Operation(
-            summary = "Remove um autor pelo ID",
-            description = "Exclui o autor especificado. Requer role: [ADMIN]")
+            summary = "Remove um autor por id",
+            description = "Exclui o autor especificado pelo seu id")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Autor excluído com sucesso"),
+            @ApiResponse(responseCode = "200", description = "Autor excluído com sucesso"),
             @ApiResponse(responseCode = "404", description = "Autor não encontrado"),
             @ApiResponse(responseCode = "409", description =
                     "A operação não pôde ser concluída porque o recurso está em uso ou possui dependências que impedem sua exclusão.")})
-@DeleteMapping("/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable(name = "id") Long id) {
         service.deleteById(id);
     }
@@ -92,18 +92,18 @@ public class AutorController {
     // ----- FEATURES ----- //
 
 
-    @Operation(summary = "Busca autores por nome", description = "Pesquisa autores cujo nome contenha o termo informado")
+    @Operation(summary = "Busca autores por nome", description = "Pesquisa retorna todos os autores onde o nome contenha o termo informado")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Resultado da pesquisa",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AutorResponse.class))))})
+            @ApiResponse(responseCode = "200", description = "Pesquisa concluída",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AutorResponse.class)))),
+            @ApiResponse(responseCode = "404", description = "Nenhum autor atende o critério de busca.")})
     @GetMapping("/search")
     public List<AutorResponse> findByNome(@RequestParam(name = "nomeAutor") String nome) {
         return service.findByName(nome);
     }
 
-    @Operation(summary = "Lista livros de um autor",
-            description = "Retorna os livros relacionados a um autor pelo id",
-            tags = "Livro")
+    @Operation(summary = "Retorna todos os livros de um autor, especificado por id",
+            description = "Retorna todos os livros de um autor, especificado por id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Livros do autor",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = LivroResponse.class)))),

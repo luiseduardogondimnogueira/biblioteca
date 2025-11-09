@@ -15,6 +15,12 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
     // navegação via transacao -> livro -> autor -> idAutor
     boolean existsByLivro_Autor_IdAutor(Long idAutor);
 
+    // navegação via transacao -> livro -> idLivro
+    boolean existsByLivro_IdLivro(Long idLivro);
+
+    // navegação via transacao -> usuario -> idUsuario
+    boolean existsByUsuario_IdUsuario(Long idUsuario);
+
     // histórico de transações do usuário (filtrar por tipo opcionalmente)
     List<Transacao> findByUsuario_idUsuarioOrderByDataHoraDesc(Long id);
     List<Transacao> findByUsuario_idUsuarioAndTipoOrderByDataHoraDesc(Long id, TipoTransacao tipo);

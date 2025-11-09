@@ -36,7 +36,6 @@ public class HistoricoChatService {
     }
 
     public HistoricoChatResponse update(HistoricoChatRequestUpdate historicoChatRequestUpdate) {
-
         // BUSCAR o objeto
         Long id = historicoChatRequestUpdate.getIdSession();
         HistoricoChat historicoChatAtualizar = repository.findById(id)

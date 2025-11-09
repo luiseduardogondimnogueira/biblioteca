@@ -5,7 +5,9 @@ import br.edu.unichristus.biblioteca.domain.dto.UsuarioRequestUpdate;
 import br.edu.unichristus.biblioteca.domain.dto.UsuarioResponse;
 import br.edu.unichristus.biblioteca.domain.model.Usuario;
 import br.edu.unichristus.biblioteca.exception.BadRequestException;
+import br.edu.unichristus.biblioteca.exception.ResourceConflictException;
 import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
+import br.edu.unichristus.biblioteca.repository.TransacaoRepository;
 import br.edu.unichristus.biblioteca.repository.UsuarioRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +22,10 @@ public class UsuarioService {
     @Autowired
     public UsuarioRepository repository;
 
-    public UsuarioResponse create(UsuarioRequest usuarioRequest) {
+    @Autowired
+    public TransacaoRepository transacaoRepository;
 
+    public UsuarioResponse create(UsuarioRequest usuarioRequest) {
         // VALIDAR (e-mail Repetido)
         if (repository.findByEmail(usuarioRequest.getEmail()).isPresent()) {
             throw new BadRequestException("O e-mail '" + usuarioRequest.getEmail() + "' já está sendo usado por outro usuário.");
@@ -72,6 +76,16 @@ public class UsuarioService {
         Usuario usuarioPesquisado = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "O usuário com o id " + id + " não foi localizado."));
+
+        // VALIDAR RELACIONAMENTOS — se existir qualquer transação, não delete!
+        boolean temTransacoes = transacaoRepository.existsByUsuario_IdUsuario(id);
+
+        if (temTransacoes) {
+            throw new ResourceConflictException(
+                    "Não é possível excluir o usuario de id " + id + ". Existem transações relacionadas a esse usuário.");
+        }
+
+        // REMOVER o usuário
         repository.deleteById(id);
     }
 

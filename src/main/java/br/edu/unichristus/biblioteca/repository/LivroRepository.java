@@ -15,6 +15,9 @@ public interface LivroRepository extends JpaRepository<Livro, Long> {
     // navegação via livro -> autor -> idAutor
     boolean existsByAutor_IdAutor(Long idAutor);
 
+    // navegação via livro -> categoria -> idCategoria
+    boolean existsByCategoria_IdCategoria(Long idCategoria);
+
     Optional<Livro> findFirstByNomeLivroIgnoreCase(String nomeLivro);
 
     List<Livro> findByNomeLivroIgnoreCase(String nomeLivro);

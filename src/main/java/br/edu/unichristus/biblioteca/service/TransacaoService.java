@@ -28,7 +28,6 @@ public class TransacaoService {
     private LivroRepository livroRepository;
 
     public TransacaoResponse create(TransacaoRequest transacaoRequest) {
-
         // VALIDAR (Usuario inexistente)
         long idUsuario = transacaoRequest.getIdUsuario();
         Usuario usuarioPesquisado = usuarioRepository.findById(idUsuario)
@@ -69,7 +68,6 @@ public class TransacaoService {
     }
 
     public TransacaoResponse update(TransacaoRequestUpdate transacaoRequestUpdate) {
-
         // BUSCAR o objeto
         Long id = transacaoRequestUpdate.getIdTransacao();
         Transacao transacaoAtualizar = repository.findById(id)

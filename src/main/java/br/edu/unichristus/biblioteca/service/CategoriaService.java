@@ -4,8 +4,10 @@ import br.edu.unichristus.biblioteca.domain.dto.CategoriaRequest;
 import br.edu.unichristus.biblioteca.domain.dto.CategoriaRequestUpdate;
 import br.edu.unichristus.biblioteca.domain.dto.CategoriaResponse;
 import br.edu.unichristus.biblioteca.domain.model.Categoria;
+import br.edu.unichristus.biblioteca.exception.ResourceConflictException;
 import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
 import br.edu.unichristus.biblioteca.repository.CategoriaRepository;
+import br.edu.unichristus.biblioteca.repository.LivroRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class CategoriaService {
 
     @Autowired
     private CategoriaRepository repository;
+
+    @Autowired
+    private LivroRepository livroRepository;
 
     public CategoriaResponse create(CategoriaRequest categoriaRequest) {
         Categoria novaCategoria = MapperUtil.parseObject(categoriaRequest, Categoria.class);
@@ -36,7 +41,6 @@ public class CategoriaService {
     }
 
     public CategoriaResponse update(CategoriaRequestUpdate categoriaRequestUpdate) {
-
         // BUSCAR o objeto
         Long id = categoriaRequestUpdate.getIdCategoria();
         Categoria categoriaAtualizar = repository.findById(id)
@@ -60,6 +64,16 @@ public class CategoriaService {
         Categoria categoriaPesquisada = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "A categoria com o id " + id + " não foi localizada."));
+
+        // VALIDAR RELACIONAMENTOS — se existir qualquer livro, não delete!
+        boolean temLivros = livroRepository.existsByCategoria_IdCategoria(id);
+
+        if (temLivros) {
+            throw new ResourceConflictException(
+                    "Não é possível excluir a categoria de id " + id + ". Existem livros cadastrados nessa categoria");
+        }
+
+        // REMOVER a categoria
         repository.deleteById(id);
     }
 

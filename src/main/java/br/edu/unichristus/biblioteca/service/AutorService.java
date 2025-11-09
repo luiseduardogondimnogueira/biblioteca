@@ -48,7 +48,6 @@ public class AutorService {
     }
 
     public AutorResponse update(AutorRequestUpdate autorRequestUpdate) {
-
         // BUSCAR o objeto
         Long id = autorRequestUpdate.getIdAutor();
         Autor autorAtualizar = repository.findById(id)
@@ -83,7 +82,7 @@ public class AutorService {
                     (temLivros && temTransacoes ? ". " : "") +
                     (temTransacoes ? "Existem transações relacionadas a este autor" : "");
             throw new ResourceConflictException(
-                    "Não é possível excluir o autor. " + motivo + ".");
+                    "Não é possível excluir o autor de id " + id + ". " + motivo + ".");
         }
 
         // REMOVER o autor

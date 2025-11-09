@@ -8,10 +8,12 @@ import br.edu.unichristus.biblioteca.domain.model.Autor;
 import br.edu.unichristus.biblioteca.domain.model.Categoria;
 import br.edu.unichristus.biblioteca.domain.model.Livro;
 import br.edu.unichristus.biblioteca.exception.BadRequestException;
+import br.edu.unichristus.biblioteca.exception.ResourceConflictException;
 import br.edu.unichristus.biblioteca.exception.ResourceNotFoundException;
 import br.edu.unichristus.biblioteca.repository.AutorRepository;
 import br.edu.unichristus.biblioteca.repository.CategoriaRepository;
 import br.edu.unichristus.biblioteca.repository.LivroRepository;
+import br.edu.unichristus.biblioteca.repository.TransacaoRepository;
 import br.edu.unichristus.biblioteca.util.MapperUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,8 +33,10 @@ public class LivroService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    public LivroResponse create(LivroRequest livroRequest) {
+    @Autowired
+    private TransacaoRepository transacaoRepository;
 
+    public LivroResponse create(LivroRequest livroRequest) {
         // VALIDAR (Livro com nome repetido)
         String nomeNovoLivro = livroRequest.getNomeLivro();
         List<Livro> livrosEncontrados = repository.findByNomeLivroIgnoreCase(nomeNovoLivro);
@@ -82,7 +86,6 @@ public class LivroService {
     }
 
     public LivroResponse update(LivroRequestUpdate livroRequestUpdate) {
-
         // BUSCAR o objeto
         Long id = livroRequestUpdate.getIdLivro();
         Livro livroAtualizar = repository.findById(id)
@@ -127,6 +130,16 @@ public class LivroService {
         Livro livroPesquisado = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "O livro com o id " + id + " não foi localizado."));
+
+        // VALIDAR RELACIONAMENTOS — se existir qualquer transação, não delete!
+        boolean temTransacoes = transacaoRepository.existsByLivro_Autor_IdAutor(id);
+
+        if (temTransacoes) {
+            throw new ResourceConflictException(
+                    "Não é possível excluir o livro de id " + id + ". Existem transações relacionadas a esse livro.");
+        }
+
+        // REMOVER o livro
         repository.deleteById(id);
     }
 
